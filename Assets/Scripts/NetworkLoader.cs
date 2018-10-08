@@ -9,6 +9,8 @@ public class NetworkLoader : MonoBehaviour {
     public string networkName;
     public GameObject nodeObject;
     public GameObject linkObject;
+    public Transform nodeParent;
+    public Transform linkParent;
     public Vector3 dimensions;
 
     public List<GameObject> nodes;
@@ -43,23 +45,50 @@ public class NetworkLoader : MonoBehaviour {
 
     void InstantiateObjects(Network n)
     {
+        //Clean up existing children first
+        while (transform.childCount != 0)
+        {
+            DestroyImmediate(transform.GetChild(0).gameObject);
+        }
+
+        if (nodeParent == null)
+        {
+            var NodesGO = new GameObject("Nodes");
+            NodesGO.transform.SetParent(transform);
+            NodesGO.transform.localPosition = Vector3.zero;
+            nodeParent = NodesGO.transform;
+        }
+        if (linkParent == null)
+        {
+            var LinksGO = new GameObject("Links");
+            LinksGO.transform.SetParent(transform);
+            LinksGO.transform.localPosition = Vector3.zero;
+            linkParent = LinksGO.transform;
+        }
+
+        nodes = new List<GameObject>();
+        links = new List<GameObject>();
+
         foreach (Node node in n.nodes)
         {
             var pos = new Vector3(node.x, node.y, node.z);
-            nodes.Add(Instantiate(nodeObject, pos, Quaternion.identity, transform));
+            var newNode = Instantiate(nodeObject, nodeParent, false);
+            newNode.transform.localPosition = pos;
+            newNode.name = "Node " + nodes.Count;
+            nodes.Add(newNode);
         }
 
         foreach (Link l in n.links)
         {
-            var pos = nodes[l.source].transform.position;
-
-            var link = Instantiate(linkObject, transform, false);
+            var link = Instantiate(linkObject, linkParent, false);
+            link.name = "Link " + l.source + " to " + l.target;
             var lr = link.GetComponent<LineRenderer>();
             lr.SetPositions(new[]
             {
-                nodes[l.source].transform.position,
-                nodes[l.target].transform.position
+                nodes[l.source].transform.localPosition,
+                nodes[l.target].transform.localPosition
             });
+            links.Add(link);
         }
     }
 
