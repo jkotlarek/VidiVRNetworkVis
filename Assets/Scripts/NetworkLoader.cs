@@ -11,6 +11,7 @@ public class NetworkLoader : MonoBehaviour {
     public GameObject linkObject;
     public Transform nodeParent;
     public Transform linkParent;
+    public bool optimizeMeshes = false;
     public Vector3 dimensions;
 
     public List<GameObject> nodes;
@@ -69,6 +70,7 @@ public class NetworkLoader : MonoBehaviour {
         nodes = new List<GameObject>();
         links = new List<GameObject>();
 
+        Debug.Log("yoooo");
         foreach (Node node in n.nodes)
         {
             var pos = new Vector3(node.x, node.y, node.z);
@@ -78,6 +80,8 @@ public class NetworkLoader : MonoBehaviour {
             nodes.Add(newNode);
         }
 
+
+        Debug.Log("yooo");
         foreach (Link l in n.links)
         {
             var link = Instantiate(linkObject, linkParent, false);
@@ -89,6 +93,62 @@ public class NetworkLoader : MonoBehaviour {
                 nodes[l.target].transform.localPosition
             });
             links.Add(link);
+        }
+
+        Debug.Log("yoo");
+        if (optimizeMeshes)
+            OptimizeMeshes(nodeParent);
+    }
+
+    void OptimizeMeshes(Transform parent)
+    {
+        MeshFilter[] filters = parent.GetComponentsInChildren<MeshFilter>();
+        List<List<CombineInstance>> combiners = new List<List<CombineInstance>>();
+
+        int verts = 0;
+
+        foreach (var filter in filters)
+        {
+            verts += filter.sharedMesh.vertexCount;
+
+            if (verts / 65534 >= combiners.Count)
+            {
+                combiners.Add(new List<CombineInstance>());
+            }
+
+            CombineInstance ci = new CombineInstance();
+            ci.subMeshIndex = 0;
+            ci.mesh = filter.sharedMesh;
+            ci.transform = Matrix4x4.TRS(filter.transform.localPosition, filter.transform.localRotation, filter.transform.localScale);
+            combiners[verts / 65534].Add(ci);
+
+        }
+        
+        Debug.Log(verts);
+
+        //Delete Children
+        while (parent.childCount != 0)
+        {
+            DestroyImmediate(parent.GetChild(0).gameObject);
+        }
+
+        for (int i = 0; i < combiners.Count; i++)
+        {
+            GameObject submesh = new GameObject();
+            submesh.name = "Node Mesh " + i;
+            submesh.transform.parent = nodeParent;
+            submesh.transform.localPosition = Vector3.zero;
+            submesh.transform.localRotation = Quaternion.identity;
+            submesh.transform.localScale = Vector3.one;
+
+            Mesh mesh = new Mesh();
+            MeshFilter meshfilter = submesh.AddComponent<MeshFilter>();
+            mesh.CombineMeshes(combiners[i].ToArray());
+            meshfilter.sharedMesh = mesh;
+
+            MeshRenderer meshrenderer = submesh.AddComponent<MeshRenderer>();
+            meshrenderer.sharedMaterial = nodeObject.GetComponent<MeshRenderer>().sharedMaterial;
+
         }
     }
 
