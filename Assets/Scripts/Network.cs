@@ -28,6 +28,7 @@ public class GraphProperties
 public class Node
 {
     public string label;
+    public string color;
     public float x;
     public float y;
     public float z;

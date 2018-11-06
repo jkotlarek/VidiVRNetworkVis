@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 
 public class NetworkLoader : MonoBehaviour {
 
@@ -69,19 +70,18 @@ public class NetworkLoader : MonoBehaviour {
 
         nodes = new List<GameObject>();
         links = new List<GameObject>();
-
-        Debug.Log("yoooo");
+        
         foreach (Node node in n.nodes)
         {
             var pos = new Vector3(node.x, node.y, node.z);
             var newNode = Instantiate(nodeObject, nodeParent, false);
             newNode.transform.localPosition = pos;
             newNode.name = "Node " + nodes.Count;
+            newNode.GetComponent<MeshRenderer>().material.SetColor("_Color", RGBStringToColor(node.color));
             nodes.Add(newNode);
         }
 
-
-        Debug.Log("yooo");
+        
         foreach (Link l in n.links)
         {
             var link = Instantiate(linkObject, linkParent, false);
@@ -94,8 +94,7 @@ public class NetworkLoader : MonoBehaviour {
             });
             links.Add(link);
         }
-
-        Debug.Log("yoo");
+        
         if (optimizeMeshes)
             OptimizeMeshes(nodeParent);
     }
@@ -124,7 +123,6 @@ public class NetworkLoader : MonoBehaviour {
 
         }
         
-        Debug.Log(verts);
 
         //Delete Children
         while (parent.childCount != 0)
@@ -155,6 +153,15 @@ public class NetworkLoader : MonoBehaviour {
     void ResizeArea(Vector3[] bounds)
     {
 
+    }
+
+    Color RGBStringToColor(string s)
+    {
+        float r = Convert.ToInt32(s.Substring(1, 2), 16) / 255f;
+        float g = Convert.ToInt32(s.Substring(3, 2), 16) / 255f;
+        float b = Convert.ToInt32(s.Substring(5, 2), 16) / 255f;
+
+        return new Color(r, g, b);
     }
 
 }
