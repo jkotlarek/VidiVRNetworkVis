@@ -70,14 +70,18 @@ public class NetworkLoader : MonoBehaviour {
 
         nodes = new List<GameObject>();
         links = new List<GameObject>();
-        
+
         foreach (Node node in n.nodes)
         {
             var pos = new Vector3(node.x, node.y, node.z);
             var newNode = Instantiate(nodeObject, nodeParent, false);
             newNode.transform.localPosition = pos;
             newNode.name = "Node " + nodes.Count;
-            newNode.GetComponent<MeshRenderer>().material.SetColor("_Color", RGBStringToColor(node.color));
+
+            if (node.color != "" && !optimizeMeshes) {
+                newNode.GetComponent<MeshRenderer>().material.SetColor("_Color", RGBStringToColor(node.color));
+            }
+
             nodes.Add(newNode);
         }
 

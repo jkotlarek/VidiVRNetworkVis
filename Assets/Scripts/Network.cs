@@ -29,6 +29,7 @@ public class Node
 {
     public string label;
     public string color;
+    public int group;
     public float x;
     public float y;
     public float z;
