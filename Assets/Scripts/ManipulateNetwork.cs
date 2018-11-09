@@ -5,7 +5,8 @@ using VRTK;
 
 public class ManipulateNetwork : MonoBehaviour {
 
-    public Transform network;
+    //public Transform network;
+    public Transform[] controllers;
     public VRTK_ControllerEvents[] controllerEvents;
     public Vector3[] start = { Vector3.zero, Vector3.zero };
     public Vector3[] current = { Vector3.zero, Vector3.zero };
@@ -17,15 +18,6 @@ public class ManipulateNetwork : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
-        controllerEvents = FindObjectsOfType<VRTK_ControllerEvents>();
-
-        foreach (VRTK_ControllerEvents contevent in controllerEvents)
-        {
-            contevent.TriggerClicked += HandleTriggerClicked;
-            contevent.TriggerUnclicked += HandleTriggerUnclicked;
-        }
-        
 
     }
 
@@ -53,23 +45,4 @@ public class ManipulateNetwork : MonoBehaviour {
             transform.localScale = startScale * (dist1 / dist0);
         }
 	}
-
-    void HandleTriggerClicked(object sender, ControllerInteractionEventArgs e)
-    {
-        Debug.Log("");
-
-        active[e.controllerReference.index] = true;
-        start[e.controllerReference.index] = transform.position;
-        current[e.controllerReference.index] = transform.position;
-
-        startPos = transform.position;
-        startRot = transform.rotation;
-        startScale = transform.localScale;
-    }
-
-    void HandleTriggerUnclicked(object sender, ControllerInteractionEventArgs e)
-    {
-        active[e.controllerReference.index] = false;
-    }
-
 }
