@@ -85,22 +85,24 @@ public class NetworkLoader : MonoBehaviour {
             nodes.Add(newNode);
         }
 
-        
-        foreach (Link l in n.links)
+        if (linkObject.GetComponent<LineRenderer>() != null)
         {
-            var link = Instantiate(linkObject, linkParent, false);
-            link.name = "Link " + l.source + " to " + l.target;
-            var lr = link.GetComponent<LineRenderer>();
-            lr.SetPositions(new[]
-            {
-                nodes[l.source].transform.localPosition,
-                nodes[l.target].transform.localPosition
-            });
-            links.Add(link);
+            links = InstantiateLinksLR(n.links);
         }
-        
+        else if (linkObject.GetComponent<MeshRenderer>() != null)
+        {
+            links = InstantiateLinksMesh(n.links);
+        }
+
         if (optimizeMeshes)
+        {
             OptimizeMeshes(nodeParent);
+
+            if (linkObject.GetComponent<MeshRenderer>() != null)
+            {
+                OptimizeMeshes(linkParent);
+            }
+        }
     }
 
     void OptimizeMeshes(Transform parent)
@@ -166,6 +168,47 @@ public class NetworkLoader : MonoBehaviour {
         float b = Convert.ToInt32(s.Substring(5, 2), 16) / 255f;
 
         return new Color(r, g, b);
+    }
+
+    //Instantiate Links with line renderer
+    List<GameObject> InstantiateLinksLR(Link[] links)
+    {
+        List<GameObject> linkList = new List<GameObject>();
+        foreach (Link l in links)
+        {
+            var link = Instantiate(linkObject, linkParent, false);
+            link.name = "Link " + l.source + " to " + l.target;
+            var lr = link.GetComponent<LineRenderer>();
+            lr.SetPositions(new[]
+            {
+                nodes[l.source].transform.localPosition,
+                nodes[l.target].transform.localPosition
+            });
+            linkList.Add(link);
+        }
+        return linkList;
+    }
+
+    //Instantiate Links with mesh (cube or cylinder)
+    List<GameObject> InstantiateLinksMesh(Link[] links)
+    {
+        List<GameObject> linkList = new List<GameObject>();
+
+        foreach(Link l in links)
+        {
+            var link = Instantiate(linkObject, linkParent, false);
+            link.name = "Link " + l.source + " to " + l.target;
+
+            var p1 = nodes[l.source].transform.localPosition;
+            var p2 = nodes[l.target].transform.localPosition;
+
+            link.transform.localPosition = (p1 + p2) / 2;
+            link.transform.localRotation = Quaternion.FromToRotation(Vector3.up, p2 - p1);
+            link.transform.localScale = new Vector3(link.transform.localScale.x, Vector3.Distance(p1, p2), link.transform.localScale.z);
+
+            linkList.Add(link);
+        }
+        return linkList;
     }
 
 }
