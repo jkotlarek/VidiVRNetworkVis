@@ -34,6 +34,7 @@ public class ControllerInput : MonoBehaviour {
         mnScript.active[(int)device] = true;
         mnScript.start[(int)device] = transform.position;
         mnScript.current[(int)device] = transform.position;
+        mnScript.SavePosition();
     }
 
     void HandleTriggerUnclicked(object sender, ControllerInteractionEventArgs e)

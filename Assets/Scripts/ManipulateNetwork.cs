@@ -45,4 +45,11 @@ public class ManipulateNetwork : MonoBehaviour {
             transform.localScale = startScale * (dist1 / dist0);
         }
 	}
+
+    public void SavePosition()
+    {
+        startPos = transform.position;
+        startRot = transform.rotation;
+        startScale = transform.localScale;
+    }
 }
