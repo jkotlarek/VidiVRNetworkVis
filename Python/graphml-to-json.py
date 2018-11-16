@@ -37,7 +37,7 @@ def convert(filename):
 	nodes = graph.findall(graphml.get("node"))
 	edges = graph.findall(graphml.get("edge"))
 
-	out = {"nodes":[], "edges":[]}
+	out = {"nodes":[], "links":[]}
 
 	for node in nodes[:]:
 		out["nodes"].append({
@@ -49,7 +49,7 @@ def convert(filename):
 		})
 
 	for edge in edges[:]:
-		out["edges"].append({
+		out["links"].append({
 			"id": edge.get("id"),
 			"source": edge.get("source"),
 			"target": edge.get("target")

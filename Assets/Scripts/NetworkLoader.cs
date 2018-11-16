@@ -78,7 +78,7 @@ public class NetworkLoader : MonoBehaviour {
             newNode.transform.localPosition = pos;
             newNode.name = "Node " + nodes.Count;
 
-            if (node.color != "" && !optimizeMeshes) {
+            if (node.color != null && !optimizeMeshes) {
                 newNode.GetComponent<MeshRenderer>().material.SetColor("_Color", RGBStringToColor(node.color));
             }
 
