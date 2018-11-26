@@ -27,6 +27,7 @@ public class GraphProperties
 [System.Serializable]
 public class Node
 {
+    public int id;
     public string label;
     public string color;
     public int group;

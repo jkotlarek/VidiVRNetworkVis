@@ -56,6 +56,30 @@ def convert(filename):
 		})
 
 
+	#fix misnumbered nodes/edges
+	#this only works because IDs are still sorted in ascending order
+	i = 0;
+	for node in out['nodes']:
+		
+		old_id = node['id']
+		node['id'] = i;
+		
+		j = 0
+		for link in out['links']:
+			
+			if link['source'] == old_id:
+				link['source'] = i
+			
+			if link['target'] == old_id:
+				link['target'] = i
+
+			link['id'] = j
+			j += 1
+
+		i += 1
+
+
+
 	return json.dumps(out)
 
 
