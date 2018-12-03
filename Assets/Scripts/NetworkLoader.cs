@@ -12,6 +12,8 @@ public class NetworkLoader : MonoBehaviour {
     public GameObject linkObject;
     public Transform nodeParent;
     public Transform linkParent;
+    public float threshold = 0.0f;
+    public bool useThreshold;
     public bool optimizeMeshes = false;
     public Vector3 dimensions;
 
@@ -176,6 +178,11 @@ public class NetworkLoader : MonoBehaviour {
         List<GameObject> linkList = new List<GameObject>();
         foreach (Link l in links)
         {
+            if (useThreshold && l.value >= threshold)
+            {
+                continue;
+            }
+
             var link = Instantiate(linkObject, linkParent, false);
             link.name = "Link " + l.source + " to " + l.target;
             var lr = link.GetComponent<LineRenderer>();
@@ -196,6 +203,11 @@ public class NetworkLoader : MonoBehaviour {
 
         foreach(Link l in links)
         {
+            if (useThreshold && l.value < threshold)
+            {
+                continue;
+            }
+
             var link = Instantiate(linkObject, linkParent, false);
             link.name = "Link " + l.source + " to " + l.target;
 
