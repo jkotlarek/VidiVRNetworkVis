@@ -12,11 +12,14 @@ public class NetworkLoader : MonoBehaviour {
     public GameObject linkObject;
     public Transform nodeParent;
     public Transform linkParent;
+    public float nodeSize;
+    public float linkSize;
     public float threshold = 0.0f;
     public bool useThreshold;
     public bool optimizeMeshes = false;
     public Vector3 dimensions;
 
+    public List<Vector3> nodePositions;
     public List<GameObject> nodes;
     public List<GameObject> links;
 
@@ -78,6 +81,7 @@ public class NetworkLoader : MonoBehaviour {
             var pos = new Vector3(node.x, node.y, node.z);
             var newNode = Instantiate(nodeObject, nodeParent, false);
             newNode.transform.localPosition = pos;
+            newNode.transform.localScale = new Vector3(nodeSize, nodeSize, nodeSize);
             newNode.name = "Node " + nodes.Count;
 
             if (node.color != null && !optimizeMeshes) {
@@ -85,6 +89,7 @@ public class NetworkLoader : MonoBehaviour {
             }
 
             nodes.Add(newNode);
+            nodePositions.Add(newNode.transform.localPosition);
         }
 
         if (linkObject.GetComponent<LineRenderer>() != null)
@@ -110,6 +115,7 @@ public class NetworkLoader : MonoBehaviour {
     void OptimizeMeshes(Transform parent)
     {
         MeshFilter[] filters = parent.GetComponentsInChildren<MeshFilter>();
+        Material mat = parent.GetComponentInChildren<MeshRenderer>().sharedMaterial;
         List<List<CombineInstance>> combiners = new List<List<CombineInstance>>();
 
         int verts = 0;
@@ -118,7 +124,7 @@ public class NetworkLoader : MonoBehaviour {
         {
             verts += filter.sharedMesh.vertexCount;
 
-            if (verts / 65534 >= combiners.Count)
+            if (verts / 65000 >= combiners.Count)
             {
                 combiners.Add(new List<CombineInstance>());
             }
@@ -127,7 +133,7 @@ public class NetworkLoader : MonoBehaviour {
             ci.subMeshIndex = 0;
             ci.mesh = filter.sharedMesh;
             ci.transform = Matrix4x4.TRS(filter.transform.localPosition, filter.transform.localRotation, filter.transform.localScale);
-            combiners[verts / 65534].Add(ci);
+            combiners[verts / 65000].Add(ci);
 
         }
         
@@ -141,8 +147,8 @@ public class NetworkLoader : MonoBehaviour {
         for (int i = 0; i < combiners.Count; i++)
         {
             GameObject submesh = new GameObject();
-            submesh.name = "Node Mesh " + i;
-            submesh.transform.parent = nodeParent;
+            submesh.name = parent.name + " " + i;
+            submesh.transform.parent = parent;
             submesh.transform.localPosition = Vector3.zero;
             submesh.transform.localRotation = Quaternion.identity;
             submesh.transform.localScale = Vector3.one;
@@ -153,7 +159,7 @@ public class NetworkLoader : MonoBehaviour {
             meshfilter.sharedMesh = mesh;
 
             MeshRenderer meshrenderer = submesh.AddComponent<MeshRenderer>();
-            meshrenderer.sharedMaterial = nodeObject.GetComponent<MeshRenderer>().sharedMaterial;
+            meshrenderer.sharedMaterial = mat;
 
         }
     }
@@ -191,6 +197,8 @@ public class NetworkLoader : MonoBehaviour {
                 nodes[l.source].transform.localPosition,
                 nodes[l.target].transform.localPosition
             });
+            lr.startWidth = linkSize;
+            lr.endWidth = linkSize;
             linkList.Add(link);
         }
         return linkList;
@@ -216,7 +224,7 @@ public class NetworkLoader : MonoBehaviour {
 
             link.transform.localPosition = (p1 + p2) / 2;
             link.transform.localRotation = Quaternion.FromToRotation(Vector3.up, p2 - p1);
-            link.transform.localScale = new Vector3(link.transform.localScale.x, Vector3.Distance(p1, p2), link.transform.localScale.z);
+            link.transform.localScale = new Vector3(linkSize, Vector3.Distance(p1, p2) * 0.5f, linkSize);
 
             linkList.Add(link);
         }
