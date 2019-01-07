@@ -11,6 +11,7 @@ public class ControllerInput : MonoBehaviour {
     public Devices device;
 
     VRTK_ControllerEvents controller;
+    Transform hit;
 
 	// Use this for initialization
 	void Start () {
@@ -23,7 +24,11 @@ public class ControllerInput : MonoBehaviour {
         controller.TouchpadTouchEnd += HandlePadTouchEnd;
         controller.TouchpadPressed += HandlePadPressed;
         controller.TouchpadReleased += HandlePadReleased;
-	}
+
+        var col = GetComponentInChildren<SphereCollider>();
+        if (col != null) hit = col.transform;
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -61,15 +66,20 @@ public class ControllerInput : MonoBehaviour {
     //Select pointed object
     void HandlePadPressed(object sender, ControllerInteractionEventArgs e)
     {
-        int indexOfNodeHit = mnScript.WhichNode(new Vector3());
+        Debug.Log("pressed");
+        if (hit == null)
+        {
+            hit = GetComponentInChildren<SphereCollider>().transform;
+        }
+
+        int indexOfNodeHit = mnScript.WhichNode(hit.position);
         if (indexOfNodeHit < 0)
         {
             return;
         }
         else
         {
-            //Add to list of highlighted nodes
-            //Add highlight effect to node
+            mnScript.ToggleHighlight(indexOfNodeHit);
         }
 
     }

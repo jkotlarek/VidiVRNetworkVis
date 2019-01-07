@@ -5,6 +5,8 @@ using VRTK;
 
 public class ManipulateNetwork : MonoBehaviour {
 
+    public GameObject highlightedNodeObject;
+
     //public Transform network;
     public Transform[] controllers;
     public VRTK_ControllerEvents[] controllerEvents;
@@ -19,10 +21,19 @@ public class ManipulateNetwork : MonoBehaviour {
 
     public float selectionThreshold;
     public List<Vector3> nodes;
+    public Dictionary<int, GameObject> highlightedNodes;
+
+    Transform highlightParent;
 
 	// Use this for initialization
 	void Start () {
-        
+
+        highlightedNodes = new Dictionary<int, GameObject>();
+
+        if (nodes == null || nodes.Count == 0)
+        {
+            nodes = GetComponent<NetworkLoader>().nodePositions;
+        }
     }
 
     // Update is called once per frame
@@ -57,17 +68,52 @@ public class ManipulateNetwork : MonoBehaviour {
         startScale = transform.localScale;
     }
 
-    public int WhichNode(Vector3 v)
+    public int WhichNode(Vector3 p)
     {
+        Vector3 v = transform.InverseTransformPoint(p);
+
+        Debug.Log("Orig: " + p);
+        Debug.Log("Local: " + v);
+
+        float minDist = float.MaxValue;
         for(int i = 0; i < nodes.Count; i++)
         {
             float dist = Vector3.Distance(v, nodes[i]);
+            if (dist < minDist) minDist = dist;
             if (dist <= selectionThreshold)
             {
+                Debug.Log("i: " + i);
                 return i;
             }
         }
+
+        Debug.Log("Min Dist: " + minDist);
         return -1;
+    }
+
+    public void ToggleHighlight(int index)
+    {
+        if (highlightParent == null)
+        {
+            var NodesGO = new GameObject("Highlighted Nodes");
+            NodesGO.transform.SetParent(transform);
+            NodesGO.transform.localPosition = Vector3.zero;
+            NodesGO.transform.localRotation = Quaternion.identity;
+            NodesGO.transform.localScale = Vector3.one;
+            highlightParent = NodesGO.transform;
+        }
+
+        if (!highlightedNodes.ContainsKey(index))
+        {
+            var h = Instantiate(highlightedNodeObject, highlightParent, false);
+            h.transform.localPosition = nodes[index];
+            highlightedNodes.Add(index, h);
+        }
+        else
+        {
+            Destroy(highlightedNodes[index]);
+            highlightedNodes.Remove(index);
+        }
     }
 
 }
