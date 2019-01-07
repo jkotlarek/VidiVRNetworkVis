@@ -54,9 +54,17 @@ public class NetworkLoader : MonoBehaviour {
     void InstantiateObjects(Network n)
     {
         //Clean up existing children first
-        while (transform.childCount != 0)
+        int i = 0;
+        while (transform.childCount > i)
         {
-            DestroyImmediate(transform.GetChild(0).gameObject);
+            if (transform.GetChild(i).CompareTag("NoDestroy"))
+            {
+                i++;
+            }
+            else
+            {
+                DestroyImmediate(transform.GetChild(i).gameObject);
+            }
         }
 
         if (nodeParent == null)
@@ -65,6 +73,7 @@ public class NetworkLoader : MonoBehaviour {
             NodesGO.transform.SetParent(transform);
             NodesGO.transform.localPosition = Vector3.zero;
             NodesGO.transform.localRotation = Quaternion.identity;
+            NodesGO.transform.localScale = Vector3.zero;
             nodeParent = NodesGO.transform;
         }
         if (linkParent == null)
@@ -73,6 +82,7 @@ public class NetworkLoader : MonoBehaviour {
             LinksGO.transform.SetParent(transform);
             LinksGO.transform.localPosition = Vector3.zero;
             LinksGO.transform.localRotation = Quaternion.identity;
+            LinksGO.transform.localScale = Vector3.zero;
             linkParent = LinksGO.transform;
         }
 
@@ -165,6 +175,7 @@ public class NetworkLoader : MonoBehaviour {
             MeshRenderer meshrenderer = submesh.AddComponent<MeshRenderer>();
             meshrenderer.sharedMaterial = mat;
 
+            submesh.AddComponent<MeshCollider>();
         }
     }
 
