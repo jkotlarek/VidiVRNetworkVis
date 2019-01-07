@@ -16,9 +16,13 @@ public class ManipulateNetwork : MonoBehaviour {
     public Quaternion startRot;
     public Vector3 startScale;
 
+
+    public float selectionThreshold;
+    public List<Vector3> nodes;
+
 	// Use this for initialization
 	void Start () {
-
+        
     }
 
     // Update is called once per frame
@@ -52,4 +56,18 @@ public class ManipulateNetwork : MonoBehaviour {
         startRot = transform.rotation;
         startScale = transform.localScale;
     }
+
+    public int WhichNode(Vector3 v)
+    {
+        for(int i = 0; i < nodes.Count; i++)
+        {
+            float dist = Vector3.Distance(v, nodes[i]);
+            if (dist <= selectionThreshold)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 }

@@ -29,6 +29,7 @@ public class NetworkLoader : MonoBehaviour {
         var bounds = GetBounds(n.nodes);
         InstantiateObjects(n);
 
+        GetComponent<ManipulateNetwork>().nodes = nodePositions;
     }
 
     Network readFile()
@@ -63,6 +64,7 @@ public class NetworkLoader : MonoBehaviour {
             var NodesGO = new GameObject("Nodes");
             NodesGO.transform.SetParent(transform);
             NodesGO.transform.localPosition = Vector3.zero;
+            NodesGO.transform.localRotation = Quaternion.identity;
             nodeParent = NodesGO.transform;
         }
         if (linkParent == null)
@@ -70,9 +72,11 @@ public class NetworkLoader : MonoBehaviour {
             var LinksGO = new GameObject("Links");
             LinksGO.transform.SetParent(transform);
             LinksGO.transform.localPosition = Vector3.zero;
+            LinksGO.transform.localRotation = Quaternion.identity;
             linkParent = LinksGO.transform;
         }
 
+        nodePositions = new List<Vector3>();
         nodes = new List<GameObject>();
         links = new List<GameObject>();
 
@@ -103,19 +107,19 @@ public class NetworkLoader : MonoBehaviour {
 
         if (optimizeMeshes)
         {
-            OptimizeMeshes(nodeParent);
+            OptimizeMeshes(nodeParent, nodeObject);
 
             if (linkObject.GetComponent<MeshRenderer>() != null)
             {
-                OptimizeMeshes(linkParent);
+                OptimizeMeshes(linkParent, linkObject);
             }
         }
     }
 
-    void OptimizeMeshes(Transform parent)
+    void OptimizeMeshes(Transform parent, GameObject parentObj)
     {
         MeshFilter[] filters = parent.GetComponentsInChildren<MeshFilter>();
-        Material mat = parent.GetComponentInChildren<MeshRenderer>().sharedMaterial;
+        Material mat = parentObj.GetComponentInChildren<MeshRenderer>().sharedMaterial;
         List<List<CombineInstance>> combiners = new List<List<CombineInstance>>();
 
         int verts = 0;
