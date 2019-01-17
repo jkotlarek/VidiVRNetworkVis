@@ -73,7 +73,7 @@ public class NetworkLoader : MonoBehaviour {
             NodesGO.transform.SetParent(transform);
             NodesGO.transform.localPosition = Vector3.zero;
             NodesGO.transform.localRotation = Quaternion.identity;
-            NodesGO.transform.localScale = Vector3.zero;
+            NodesGO.transform.localScale = Vector3.one;
             nodeParent = NodesGO.transform;
         }
         if (linkParent == null)
@@ -82,7 +82,7 @@ public class NetworkLoader : MonoBehaviour {
             LinksGO.transform.SetParent(transform);
             LinksGO.transform.localPosition = Vector3.zero;
             LinksGO.transform.localRotation = Quaternion.identity;
-            LinksGO.transform.localScale = Vector3.zero;
+            LinksGO.transform.localScale = Vector3.one;
             linkParent = LinksGO.transform;
         }
 
