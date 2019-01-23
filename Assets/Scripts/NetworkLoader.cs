@@ -29,7 +29,9 @@ public class NetworkLoader : MonoBehaviour {
         var bounds = GetBounds(n.nodes);
         InstantiateObjects(n);
 
-        GetComponent<ManipulateNetwork>().nodes = nodePositions;
+        var mn = GetComponent<ManipulateNetwork>();
+        mn.nodes = nodePositions;
+        mn.nodeScale = nodeSize;
     }
 
     Network readFile()
@@ -175,7 +177,7 @@ public class NetworkLoader : MonoBehaviour {
             MeshRenderer meshrenderer = submesh.AddComponent<MeshRenderer>();
             meshrenderer.sharedMaterial = mat;
 
-            submesh.AddComponent<MeshCollider>();
+            //submesh.AddComponent<MeshCollider>();
         }
     }
 

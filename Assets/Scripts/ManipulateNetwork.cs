@@ -20,6 +20,7 @@ public class ManipulateNetwork : MonoBehaviour {
     public Vector3 startScale;
 
     public float translateFactor = 1.0f;
+    public float nodeScale = 1.0f;
     public float selectionThreshold;
     public List<Vector3> nodes;
     public Dictionary<int, GameObject> highlightedNodes;
@@ -152,6 +153,7 @@ public class ManipulateNetwork : MonoBehaviour {
         {
             var h = Instantiate(highlightedNodeObject, highlightParent, false);
             h.transform.localPosition = nodes[index];
+            h.transform.localScale *= nodeScale;
             highlightedNodes.Add(index, h);
         }
         else

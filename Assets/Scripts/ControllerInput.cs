@@ -16,6 +16,7 @@ public class ControllerInput : MonoBehaviour {
     public float rayAngle = 5f;
 
     VRTK_ControllerEvents controller;
+    LineRenderer LR;
     Transform hit;
 
 	// Use this for initialization
@@ -35,6 +36,8 @@ public class ControllerInput : MonoBehaviour {
 
         var col = GetComponentInChildren<SphereCollider>();
         if (col != null) hit = col.transform;
+
+        LR = GetComponent<LineRenderer>();
 
     }
 	
@@ -63,12 +66,14 @@ public class ControllerInput : MonoBehaviour {
     void HandlePadTouchStart(object sender, ControllerInteractionEventArgs e)
     {
         active = true;
+        LR.enabled = true;
     }
 
     //Disable pointer
     void HandlePadTouchEnd(object sender, ControllerInteractionEventArgs e)
     {
         active = false;
+        LR.enabled = false;
     }
 
     //Select pointed object
