@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VRTK;
 
 public enum Devices { LeftController = 0, RightController = 1}
@@ -9,6 +10,10 @@ public class ControllerInput : MonoBehaviour {
 
     public ManipulateNetwork mnScript;
     public Devices device;
+
+    public bool active = false;
+    public float rayLength = 100f;
+    public float rayAngle = 5f;
 
     VRTK_ControllerEvents controller;
     Transform hit;
@@ -24,6 +29,9 @@ public class ControllerInput : MonoBehaviour {
         controller.TouchpadTouchEnd += HandlePadTouchEnd;
         controller.TouchpadPressed += HandlePadPressed;
         controller.TouchpadReleased += HandlePadReleased;
+        controller.GripClicked += HandleGripClicked;
+        controller.GripUnclicked += HandleGripUnclicked;
+
 
         var col = GetComponentInChildren<SphereCollider>();
         if (col != null) hit = col.transform;
@@ -54,38 +62,54 @@ public class ControllerInput : MonoBehaviour {
     //Enable pointer
     void HandlePadTouchStart(object sender, ControllerInteractionEventArgs e)
     {
-
+        active = true;
     }
 
     //Disable pointer
     void HandlePadTouchEnd(object sender, ControllerInteractionEventArgs e)
     {
-
+        active = false;
     }
 
     //Select pointed object
     void HandlePadPressed(object sender, ControllerInteractionEventArgs e)
     {
         Debug.Log("pressed");
-        if (hit == null)
-        {
-            hit = GetComponentInChildren<SphereCollider>().transform;
-        }
-
-        int indexOfNodeHit = mnScript.WhichNode(hit.position);
-        if (indexOfNodeHit < 0)
-        {
-            return;
-        }
-        else
-        {
-            mnScript.ToggleHighlight(indexOfNodeHit);
-        }
-
+        RayCast();
     }
 
     //nothing
     void HandlePadReleased(object sender, ControllerInteractionEventArgs e)
+    {
+
+    }
+
+    void HandleGripClicked(object sender, ControllerInteractionEventArgs e)
+    {
+        mnScript.nextScene[(int)device] = true;
+        if (mnScript.nextScene[0] == true && mnScript.nextScene[1] == true)
+        {
+            NextScene();
+        }
+    }
+
+    void HandleGripUnclicked(object sender, ControllerInteractionEventArgs e)
+    {
+
+        mnScript.nextScene[(int)device] = false;
+    }
+
+    void RayCast()
+    {
+        //Custom Angle-distance ray
+        Ray ray = new Ray(transform.position, transform.forward);
+        int indexOfNodeHit = mnScript.RayCastToNode(ray, Mathf.Deg2Rad * rayAngle, rayLength);
+
+        if (indexOfNodeHit < 0) return;
+        else mnScript.ToggleHighlight(indexOfNodeHit);
+    }
+
+    void NextScene()
     {
 
     }

@@ -12,13 +12,14 @@ public class ManipulateNetwork : MonoBehaviour {
     public VRTK_ControllerEvents[] controllerEvents;
     public Vector3[] start = { Vector3.zero, Vector3.zero };
     public Vector3[] current = { Vector3.zero, Vector3.zero };
-    public bool[] active = {false, false};
+    public bool[] active = { false, false };
+    public bool[] nextScene = { false, false };
 
     public Vector3 startPos;
     public Quaternion startRot;
     public Vector3 startScale;
 
-
+    public float translateFactor = 1.0f;
     public float selectionThreshold;
     public List<Vector3> nodes;
     public Dictionary<int, GameObject> highlightedNodes;
@@ -44,14 +45,16 @@ public class ManipulateNetwork : MonoBehaviour {
             Vector3 mid0 = (start[0] + start[1]) / 2;
             Vector3 mid1 = (current[0] + current[1]) / 2;
 
-            transform.position = startPos + (mid1 - mid0);
+            transform.position = startPos + translateFactor*(mid1 - mid0);
 
             //Modify rotation
+            /*
             Vector3 from = start[1] - start[0];
             Vector3 to = current[1] - current[0];
             Quaternion q = Quaternion.FromToRotation(from, to);
-
+            
             transform.rotation = startRot * q;
+            */
 
             //Modify scale
             float dist0 = Vector3.Distance(start[0], start[1]);
@@ -89,6 +92,48 @@ public class ManipulateNetwork : MonoBehaviour {
 
         Debug.Log("Min Dist: " + minDist);
         return -1;
+    }
+
+    /// <summary>
+    /// Casts a ray from a point to select nodes in a cone.
+    /// Returns the closest node to the ray origin if multiple are within the cone.
+    /// Returns -1 if no nodes are inside the cone.
+    /// </summary>
+    /// <param name="ray">The ray in world space</param>
+    /// <param name="angle">The angle selection threshold</param>
+    /// <param name="maxDist">The maximum distance to cast</param>
+    /// <returns>The index of the node hit.</returns>
+    public int RayCastToNode(Ray ray, float angle, float maxDist)
+    {
+        ray.origin = transform.InverseTransformPoint(ray.origin);
+        ray.direction = transform.InverseTransformDirection(ray.direction);
+
+        float threshold = Mathf.Tan(angle);
+        Dictionary<int, float> selectedNodes = new Dictionary<int, float>();
+
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            float dist = Vector3.Cross(ray.direction, nodes[i] - ray.origin).magnitude;
+            float length = Vector3.Distance(ray.origin + ray.direction * Vector3.Dot(ray.direction, nodes[i] - ray.origin), ray.origin);
+            if (dist <= length * threshold)
+            {
+                selectedNodes.Add(i, length);
+            }
+
+            
+        }
+        int node = -1;
+        float l = float.MaxValue;
+        foreach (KeyValuePair<int, float> kp in selectedNodes)
+        {
+            if (kp.Value < float.MaxValue)
+            {
+                node = kp.Key;
+                l = kp.Value;
+            }
+        }
+
+        return node;
     }
 
     public void ToggleHighlight(int index)
