@@ -1,33 +1,50 @@
+#Author: Joseph Kotlarek
+#Last Updated: 1/22/2019
+
+#Usage:
+#>python layout-to-json.py --files <file1> <file2> ...
+
+#note: do not include .layout extension in filename, it is assumed.
+#note: output file is named '<fileX>.json' in same directory as input file.
+
 import os
 import json
+import argparse
 
-edgelist = []
-nodelist = []
-nodelookup = []
+parser = argparse.ArgumentParser(description='Convert .layout files to .json')
+parser.add_argument('--files', dest='files', type=str, nargs='+', help='names of files to convert, not including extensions.')
 
-with open('terr.layout', 'r') as layoutfile:
-	while True:
-		line = layoutfile.readline()
+args = parser.parse_args()
 
-		if (line == ''):
-			break
 
-		if (line.startswith('//NODECOORD')):
-			#Add node
-			n = line.split()
-			s = line.split('"')
-			nodelookup.append(s[1])
-			nodelist.append({'label':s[1], 'x':n[2], 'y':n[3], 'z':n[4]})
+for filename in args.files:
+	print(filename)
+	edgelist = []
+	nodelist = []
+	nodelookup = []
+	with open(filename + '.layout', 'r') as layoutfile:
+		while True:
+			line = layoutfile.readline()
 
-		elif (line.startswith('"')):
-			#Add edge
-			s = line.split('"')
-			edgelist.append({'source':s[1], 'target':s[3], 'value':1})
+			if (line == ''):
+				break
 
-for edge in edgelist:
-	edge['source'] = nodelookup.index(edge['source'])
-	edge['target'] = nodelookup.index(edge['target'])
+			if (line.startswith('//NODECOORD')):
+				#Add node
+				n = line.split()
+				s = line.split('"')
+				nodelookup.append(s[1])
+				nodelist.append({'label':s[1], 'x':n[2], 'y':n[3], 'z':n[4]})
 
-jsondata = {'nodes':nodelist, 'links':edgelist}
+			elif (line.startswith('"')):
+				#Add edge
+				s = line.split('"')
+				edgelist.append({'source':s[1], 'target':s[3], 'value':1})
 
-open('terr.json', 'w').write(json.dumps(jsondata, indent=4, separators=(',',': ')))
+	for edge in edgelist:
+		edge['source'] = nodelookup.index(edge['source'])
+		edge['target'] = nodelookup.index(edge['target'])
+
+	jsondata = {'nodes':nodelist, 'links':edgelist}
+
+	open(filename + '.json', 'w').write(json.dumps(jsondata, indent=4, separators=(',',': ')))
