@@ -5,9 +5,8 @@ using UnityEngine;
 
 public class TaskManager : MonoBehaviour
 {
-
-    DateTime taskStart;
-    DateTime taskEnd;
+    Task[] tasks;
+    Task task;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +26,7 @@ public class TaskManager : MonoBehaviour
     //--Show start screen
     public void InitTask()
     {
-
+        task.Init();
     }
 
     //Start task
@@ -35,7 +34,7 @@ public class TaskManager : MonoBehaviour
     //--Start control sequences
     public void StartTask()
     {
-        taskStart = DateTime.Now;
+        task.Begin();
     }
 
     //Complete Task
@@ -44,9 +43,9 @@ public class TaskManager : MonoBehaviour
     //--Output results
     public void EndTask()
     {
-        taskEnd = DateTime.Now;
+        task.End();
 
-
+        JsonUtility.ToJson(task);
     }
 
     //Transition to next task
