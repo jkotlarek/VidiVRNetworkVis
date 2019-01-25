@@ -9,12 +9,16 @@ public class Task : MonoBehaviour
 
     public string task;
     public string dataset;
+    public string viewcond;
 
-    public int interactions;
-    public float time;
-    public float error;
+    public int highlightActions = 0;
+    public int touchActions = 0;
+    public int totalInteractions = 0;
+    public double time;
+    public double error;
 
     public int[] nodes;
+    public int[] correctNodes;
 
     [NonSerialized] public DateTime taskStart;
     [NonSerialized] public DateTime taskEnd;

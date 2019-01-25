@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public class TaskManager : MonoBehaviour
 {
+
+    public ManipulateNetwork mnScript;
+
     Task[] tasks;
     Task task;
 
@@ -45,7 +50,17 @@ public class TaskManager : MonoBehaviour
     {
         task.End();
 
-        JsonUtility.ToJson(task);
+        task.time = (task.taskEnd - task.taskStart).TotalSeconds;
+
+        mnScript.highlightedNodes.Keys.CopyTo(task.nodes, 0);
+        var exc1 = task.nodes.Except(task.correctNodes);
+        var exc2 = task.correctNodes.Except(task.nodes);
+        int errors = exc1.Count() + exc2.Count();
+
+        task.error = (double)errors / task.nodes.Length;
+
+        string path = Application.streamingAssetsPath + "/out/" + task.viewcond + "_" + task.name + "_" + task.dataset + ".json";
+        File.WriteAllText(path, JsonUtility.ToJson(task));
     }
 
     //Transition to next task
@@ -53,7 +68,17 @@ public class TaskManager : MonoBehaviour
     //--Start Init for next task.
     public void TransitionNextTask()
     {
+        
+    }
 
+    public void IncrementHighlightAction()
+    {
+        task.highlightActions++;
+    }
+
+    public void IncremementTouchAction()
+    {
+        task.touchActions++;
     }
 
 }

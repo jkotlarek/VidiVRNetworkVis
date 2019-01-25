@@ -5,6 +5,7 @@ using VRTK;
 
 public class ManipulateNetwork : MonoBehaviour {
 
+    public TaskManager taskManager;
     public GameObject highlightedNodeObject;
 
     //public Transform network;
@@ -12,7 +13,7 @@ public class ManipulateNetwork : MonoBehaviour {
     public VRTK_ControllerEvents[] controllerEvents;
     public Vector3[] start = { Vector3.zero, Vector3.zero };
     public Vector3[] current = { Vector3.zero, Vector3.zero };
-    public bool[] active = { false, false };
+    public bool[] active = { false, false, false };
     public bool[] nextScene = { false, false };
 
     public Vector3 startPos;
@@ -42,6 +43,12 @@ public class ManipulateNetwork : MonoBehaviour {
     void Update () {
         if (active[0] && active[1])
         {
+            if (!active[2])
+            {
+                active[2] = true;
+                taskManager.IncremementTouchAction();
+            }
+
             //Modify position
             Vector3 mid0 = (start[0] + start[1]) / 2;
             Vector3 mid1 = (current[0] + current[1]) / 2;
@@ -139,6 +146,9 @@ public class ManipulateNetwork : MonoBehaviour {
 
     public void ToggleHighlight(int index)
     {
+
+        taskManager.IncrementHighlightAction();
+
         if (highlightParent == null)
         {
             var NodesGO = new GameObject("Highlighted Nodes");

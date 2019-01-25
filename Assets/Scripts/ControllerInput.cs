@@ -60,6 +60,7 @@ public class ControllerInput : MonoBehaviour {
     void HandleTriggerUnclicked(object sender, ControllerInteractionEventArgs e)
     {
         mnScript.active[(int)device] = false;
+        mnScript.active[2] = false;
     }
 
     //Enable pointer

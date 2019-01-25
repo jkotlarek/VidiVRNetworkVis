@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,11 +24,11 @@ public class RecallNodesTask : Task
 
     public override void Begin()
     {
-
+        taskStart = DateTime.Now;
     }
 
     public override void End()
     {
-
+        taskEnd = DateTime.Now;
     }
 }
