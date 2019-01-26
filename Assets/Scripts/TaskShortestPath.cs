@@ -5,21 +5,11 @@ using UnityEngine;
 
 public class ShortestPathTask : Task
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public override void Init()
     {
-        
+        stages = new List<Stage>();
+        stages.Add(new Stage(0, false, false, View.TITLE));
+        stages.Add(new Stage(0, true, true, View.PATH));
     }
 
     public override void Begin()

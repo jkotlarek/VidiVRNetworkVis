@@ -10,8 +10,9 @@ public class TaskManager : MonoBehaviour
 
     public ManipulateNetwork mnScript;
 
-    Task[] tasks;
-    Task task;
+    public Task[] tasks;
+    int i = 0;
+    Stage stage;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +32,7 @@ public class TaskManager : MonoBehaviour
     //--Show start screen
     public void InitTask()
     {
-        task.Init();
+        tasks[i].Init();
     }
 
     //Start task
@@ -39,7 +40,12 @@ public class TaskManager : MonoBehaviour
     //--Start control sequences
     public void StartTask()
     {
-        task.Begin();
+        tasks[i].Begin();
+    }
+
+    public void StartStage()
+    {
+
     }
 
     //Complete Task
@@ -48,19 +54,20 @@ public class TaskManager : MonoBehaviour
     //--Output results
     public void EndTask()
     {
-        task.End();
+        tasks[i].End();
 
-        task.time = (task.taskEnd - task.taskStart).TotalSeconds;
+        tasks[i].time = (tasks[i].taskEnd - tasks[i].taskStart).TotalSeconds;
 
-        mnScript.highlightedNodes.Keys.CopyTo(task.nodes, 0);
-        var exc1 = task.nodes.Except(task.correctNodes);
-        var exc2 = task.correctNodes.Except(task.nodes);
+        mnScript.highlightedNodes.Keys.CopyTo(tasks[i].nodes, 0);
+        var exc1 = tasks[i].nodes.Except(tasks[i].correctNodes);
+        var exc2 = tasks[i].correctNodes.Except(tasks[i].nodes);
         int errors = exc1.Count() + exc2.Count();
+        tasks[i].error = (double)errors / tasks[i].nodes.Length;
 
-        task.error = (double)errors / task.nodes.Length;
+        tasks[i].totalInteractions = tasks[i].highlightActions + tasks[i].touchActions;
 
-        string path = Application.streamingAssetsPath + "/out/" + task.viewcond + "_" + task.name + "_" + task.dataset + ".json";
-        File.WriteAllText(path, JsonUtility.ToJson(task));
+        string path = Application.streamingAssetsPath + "/out/" + tasks[i].viewcond + "_" + tasks[i].name + "_" + tasks[i].dataset + ".json";
+        File.WriteAllText(path, JsonUtility.ToJson(tasks[i]));
     }
 
     //Transition to next task
@@ -71,14 +78,30 @@ public class TaskManager : MonoBehaviour
         
     }
 
+    public void NextStage()
+    {
+        if (tasks[i].stages.Count() == 0)
+        {
+            TransitionNextTask();
+        }
+        else
+        {
+            stage = tasks[i].stages[0];
+            tasks[i].stages.RemoveAt(0);
+            StartStage();
+        }
+    }
+
     public void IncrementHighlightAction()
     {
-        task.highlightActions++;
+        //tasks[i].highlightActions++;
+        Debug.Log("highlight");
     }
 
     public void IncremementTouchAction()
     {
-        task.touchActions++;
+        //tasks[i].touchActions++;
+        Debug.Log("touch");
     }
 
 }

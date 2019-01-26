@@ -5,21 +5,13 @@ using UnityEngine;
 
 public class RecallNodesTask : Task
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     public override void Init()
     {
-
+        stages = new List<Stage>();
+        stages.Add(new Stage(0, false, false, View.TITLE));
+        stages.Add(new Stage(30, false, false, View.RECALL));
+        stages.Add(new Stage(15, false, false, View.BLANK));
+        stages.Add(new Stage(0, true, true, View.NORMAL));
     }
 
     public override void Begin()

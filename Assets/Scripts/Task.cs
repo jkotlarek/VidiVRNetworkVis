@@ -22,8 +22,30 @@ public class Task : MonoBehaviour
 
     [NonSerialized] public DateTime taskStart;
     [NonSerialized] public DateTime taskEnd;
+    [NonSerialized] public List<Stage> stages;
 
     public virtual void Init() { }
     public virtual void Begin() { }
     public virtual void End() { }
+}
+
+public class Stage
+{
+    public float duration;
+    public bool startInteraction;
+    public bool endInteraction;
+    public View view;
+
+    public Stage(float duration, bool startInteraction, bool endInteraction, View view)
+    {
+        this.duration = duration;
+        this.startInteraction = startInteraction;
+        this.endInteraction = endInteraction;
+        this.view = view;
+    }
+}
+
+public enum View
+{
+    BLANK, TITLE, NORMAL, PATH, RECALL, MUTATED
 }
