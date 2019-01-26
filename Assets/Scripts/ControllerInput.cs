@@ -13,7 +13,7 @@ public class ControllerInput : MonoBehaviour {
 
     public bool active = false;
     public float rayLength = 100f;
-    public float rayAngle = 5f;
+    public float rayAngle = 0f;
 
     VRTK_ControllerEvents controller;
     LineRenderer LR;
@@ -92,17 +92,17 @@ public class ControllerInput : MonoBehaviour {
 
     void HandleGripClicked(object sender, ControllerInteractionEventArgs e)
     {
-        mnScript.nextScene[(int)device] = true;
-        if (mnScript.nextScene[0] == true && mnScript.nextScene[1] == true)
+        mnScript.nextStage[(int)device] = true;
+        if (mnScript.nextStage[0] == true && mnScript.nextStage[1] == true)
         {
-            NextScene();
+            mnScript.Continue();
         }
     }
 
     void HandleGripUnclicked(object sender, ControllerInteractionEventArgs e)
     {
 
-        mnScript.nextScene[(int)device] = false;
+        mnScript.nextStage[(int)device] = false;
     }
 
     void RayCast()
@@ -113,11 +113,6 @@ public class ControllerInput : MonoBehaviour {
 
         if (indexOfNodeHit < 0) return;
         else mnScript.ToggleHighlight(indexOfNodeHit);
-    }
-
-    void NextScene()
-    {
-
     }
 
 }

@@ -14,7 +14,7 @@ public class ManipulateNetwork : MonoBehaviour {
     public Vector3[] start = { Vector3.zero, Vector3.zero };
     public Vector3[] current = { Vector3.zero, Vector3.zero };
     public bool[] active = { false, false, false };
-    public bool[] nextScene = { false, false };
+    public bool[] nextStage = { false, false };
 
     public Vector3 startPos;
     public Quaternion startRot;
@@ -123,7 +123,7 @@ public class ManipulateNetwork : MonoBehaviour {
         {
             float dist = Vector3.Cross(ray.direction, nodes[i] - ray.origin).magnitude;
             float length = Vector3.Distance(ray.origin + ray.direction * Vector3.Dot(ray.direction, nodes[i] - ray.origin), ray.origin);
-            if (dist <= length * threshold)
+            if (dist <= Mathf.Max(length * threshold, nodeScale))
             {
                 selectedNodes.Add(i, length);
             }
@@ -134,7 +134,7 @@ public class ManipulateNetwork : MonoBehaviour {
         float l = float.MaxValue;
         foreach (KeyValuePair<int, float> kp in selectedNodes)
         {
-            if (kp.Value < float.MaxValue)
+            if (kp.Value < l)
             {
                 node = kp.Key;
                 l = kp.Value;
@@ -172,5 +172,12 @@ public class ManipulateNetwork : MonoBehaviour {
             highlightedNodes.Remove(index);
         }
     }
+
+
+    public void Continue()
+    {
+        taskManager.NextStage();
+    }
+
 
 }
