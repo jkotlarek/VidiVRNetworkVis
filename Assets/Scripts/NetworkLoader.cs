@@ -29,9 +29,20 @@ public class NetworkLoader : MonoBehaviour {
         var bounds = GetBounds(n.nodes);
         InstantiateObjects(n);
 
-        var mn = GetComponent<ManipulateNetwork>();
-        mn.nodes = nodePositions;
-        mn.nodeScale = nodeSize;
+        try
+        {
+            var mn = GetComponent<ManipulateNetwork>();
+            mn.nodes = nodePositions;
+            mn.nodeScale = nodeSize;
+        } catch
+        {
+
+            var mn = GetComponent<ManipulateNetwork2D>();
+            mn.nodes = nodePositions;
+            mn.nodeScale = nodeSize;
+        }
+
+
     }
 
     Network readFile()
