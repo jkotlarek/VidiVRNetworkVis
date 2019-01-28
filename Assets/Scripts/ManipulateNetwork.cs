@@ -15,6 +15,7 @@ public class ManipulateNetwork : MonoBehaviour {
     public Vector3[] current = { Vector3.zero, Vector3.zero };
     public bool[] active = { false, false, false };
     public bool[] nextStage = { false, false };
+    public bool allowHighlight = true;
 
     public Vector3 startPos;
     public Quaternion startRot;
@@ -164,6 +165,7 @@ public class ManipulateNetwork : MonoBehaviour {
             var h = Instantiate(highlightedNodeObject, highlightParent, false);
             h.transform.localPosition = nodes[index];
             h.transform.localScale *= nodeScale;
+            h.name = "Node " + index;
             highlightedNodes.Add(index, h);
         }
         else

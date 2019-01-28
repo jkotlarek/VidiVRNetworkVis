@@ -12,15 +12,37 @@ public class RecallNodesTask : Task
         stages.Add(new Stage(30, false, false, View.RECALL));
         stages.Add(new Stage(15, false, false, View.BLANK));
         stages.Add(new Stage(0, true, true, View.NORMAL));
+
+        if (correctNodes.Length == 0)
+        {
+            switch (dataset)
+            {
+                case "D0":
+                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
+                    break;
+                case "D1":
+                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
+                    break;
+                case "D2":
+                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
+                    break;
+                case "D3":
+                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
+                    break;
+                case "D4":
+                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
+                    break;
+            }
+        }
     }
 
     public override void Begin()
     {
-        taskStart = DateTime.Now;
+
     }
 
     public override void End()
     {
-        taskEnd = DateTime.Now;
+
     }
 }

@@ -66,22 +66,28 @@ public class ControllerInput : MonoBehaviour {
     //Enable pointer
     void HandlePadTouchStart(object sender, ControllerInteractionEventArgs e)
     {
-        active = true;
-        LR.enabled = true;
+        if (mnScript.allowHighlight)
+        {
+            active = true;
+            LR.enabled = true;
+        }
     }
 
     //Disable pointer
     void HandlePadTouchEnd(object sender, ControllerInteractionEventArgs e)
     {
-        active = false;
-        LR.enabled = false;
+        if (mnScript.allowHighlight)
+        {
+            active = false;
+            LR.enabled = false;
+        }
     }
 
     //Select pointed object
     void HandlePadPressed(object sender, ControllerInteractionEventArgs e)
     {
         Debug.Log("pressed");
-        RayCast();
+        if (active) RayCast();
     }
 
     //nothing
