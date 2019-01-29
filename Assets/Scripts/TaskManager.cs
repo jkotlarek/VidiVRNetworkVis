@@ -9,14 +9,19 @@ public class TaskManager : MonoBehaviour
 {
 
     public ManipulateNetwork mnScript;
+    public ManipulateNetwork2D mnScript2D;
     public NetworkLoader nlScript;
 
+    List<GameObject> network;
+
     public Task[] tasks;
+    public Dataset[] datasets;
     int i = 0;
     Stage stage;
 
     bool timerActive = false;
     float timeLeft = 0.0f;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -64,7 +69,8 @@ public class TaskManager : MonoBehaviour
         if (stage.startInteraction)
         {
             //Enable Controls
-            mnScript.allowHighlight = true;
+            if (mnScript != null) mnScript.allowHighlight = true;
+            else if (mnScript2D != null) mnScript2D.allowHighlight = true;
             //Start timer
             tasks[i].taskStart = DateTime.Now;
         }
@@ -73,26 +79,36 @@ public class TaskManager : MonoBehaviour
         {
             //Black screen
             case View.BLANK:
+                SetNetworkVisibility(false);
                 break;
 
             //Graph with nodes removed
             case View.MUTATED:
+                LoadNetwork(tasks[i]);
+                SetNetworkVisibility(true);
                 break;
 
             //Graph with no nodes removed or highlighted
             case View.NORMAL:
+                LoadNetwork(tasks[i]);
+                SetNetworkVisibility(true);
                 break;
 
             //Graph with first and last "correctNodes" highlighted
             case View.PATH:
+                LoadNetwork(tasks[i]);
+                SetNetworkVisibility(true);
                 break;
 
             //Graph with all "correctNodes" highlighted
             case View.RECALL:
+                LoadNetwork(tasks[i]);
+                SetNetworkVisibility(true);
                 break;
 
             //Black screen with task guide
             case View.TITLE:
+                SetNetworkVisibility(false);
                 break;
 
         }
@@ -110,7 +126,8 @@ public class TaskManager : MonoBehaviour
         if (stage.endInteraction)
         {
             //Disable Controls
-            mnScript.allowHighlight = false;
+            if (mnScript != null) mnScript.allowHighlight = false;
+            else if (mnScript2D != null) mnScript2D.allowHighlight = false;
             //Stop timer
             tasks[i].taskEnd = DateTime.Now;
         }
@@ -126,7 +143,9 @@ public class TaskManager : MonoBehaviour
 
         tasks[i].time = (tasks[i].taskEnd - tasks[i].taskStart).TotalSeconds;
 
-        mnScript.highlightedNodes.Keys.CopyTo(tasks[i].nodes, 0);
+        if (mnScript != null) mnScript.highlightedNodes.Keys.CopyTo(tasks[i].nodes, 0);
+        else if (mnScript2D != null) mnScript2D.highlightedNodes.Keys.CopyTo(tasks[i].nodes, 0);
+
         var exc1 = tasks[i].nodes.Except(tasks[i].correctNodes);
         var exc2 = tasks[i].correctNodes.Except(tasks[i].nodes);
         int errors = exc1.Count() + exc2.Count();
@@ -176,6 +195,38 @@ public class TaskManager : MonoBehaviour
     {
         tasks[i].touchActions++;
         Debug.Log("touch");
+    }
+
+    public void LoadNetwork(Task t)
+    {
+        nlScript.networkFolder = t.viewcond.ToLower();
+        var data = datasets[int.Parse(t.dataset.Substring(1, 1))];
+        nlScript.networkName = data.filename;
+        nlScript.nodeSize = data.nodeSize;
+        nlScript.linkSize = data.linkSize;
+        nlScript.LoadNetwork();
+    }
+
+    public void SetNetworkVisibility(bool vis)
+    {
+        if (!vis)
+        {
+            network = new List<GameObject>();
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var go = transform.GetChild(i).gameObject;
+                network.Add(go);
+                go.SetActive(false);
+            }
+        }
+        else
+        {
+            foreach (var go in network)
+            {
+                go.SetActive(true);
+            }
+            network.Clear();
+        }
     }
 
 }

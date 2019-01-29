@@ -11,6 +11,7 @@ public class ManipulateNetwork2D : MonoBehaviour
     public float nodeScale;
     public List<Vector3> nodes;
     public Dictionary<int, GameObject> highlightedNodes;
+    public bool allowHighlight = true;
 
     Transform highlightParent;
     Vector3 lastMousePos;
@@ -30,7 +31,7 @@ public class ManipulateNetwork2D : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonUp(0))
+        if (allowHighlight && Input.GetMouseButtonUp(0))
         {
             Debug.Log("click");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -39,14 +40,14 @@ public class ManipulateNetwork2D : MonoBehaviour
         }
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - (scroll * 0.2f), 0.01f, 0.7f);
+        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - (scroll * 0.2f), 0.007f, 0.7f);
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(0))
         {
             lastMousePos = Input.mousePosition;
         }
-        //If right mouse is held down
-        if (Input.GetMouseButton(1))
+        //If left mouse is held down
+        if (Input.GetMouseButton(0))
         {
             Vector3 newPos = Camera.main.transform.position - (Input.mousePosition - lastMousePos)*2*Camera.main.orthographicSize/Camera.main.pixelHeight;
             newPos.x = Mathf.Clamp(newPos.x, -1, 1);

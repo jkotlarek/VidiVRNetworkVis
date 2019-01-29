@@ -45,6 +45,15 @@ public class Stage
     }
 }
 
+[Serializable]
+public class Dataset
+{
+    public string name;
+    public string filename;
+    public float nodeSize;
+    public float linkSize;
+}
+
 public enum View
 {
     BLANK, TITLE, NORMAL, PATH, RECALL, MUTATED
