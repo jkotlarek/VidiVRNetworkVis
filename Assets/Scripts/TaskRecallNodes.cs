@@ -5,15 +5,24 @@ using UnityEngine;
 
 public class RecallNodesTask : Task
 {
+    public RecallNodesTask(string task, string dataset, string viewcond)
+    {
+        this.task = task;
+        this.dataset = dataset;
+        this.viewcond = viewcond;
+    }
+
     public override void Init()
     {
-        stages = new List<Stage>();
-        stages.Add(new Stage(0, false, false, View.TITLE));
-        stages.Add(new Stage(30, false, false, View.RECALL));
-        stages.Add(new Stage(15, false, false, View.BLANK));
-        stages.Add(new Stage(0, true, true, View.NORMAL));
+        Debug.Log("RecallNodesTask.Init");
 
-        if (correctNodes.Length == 0)
+        stages = new List<Stage>();
+        stages.Add(new Stage(0, false, false, View.TITLE, "Task - Recall Nodes\nRead Handout"));
+        stages.Add(new Stage(30, false, false, View.RECALL, ""));
+        stages.Add(new Stage(15, false, false, View.BLANK, "Please Wait"));
+        stages.Add(new Stage(0, true, true, View.NORMAL, ""));
+
+        if (correctNodes == null || correctNodes.Length == 0)
         {
             switch (dataset)
             {

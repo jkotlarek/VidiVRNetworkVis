@@ -27,21 +27,25 @@ public class Task
     public virtual void Init() { }
     public virtual void Begin() { }
     public virtual void End() { }
+    
 }
 
+[Serializable]
 public class Stage
 {
     public float duration;
     public bool startInteraction;
     public bool endInteraction;
     public View view;
+    public string description;
 
-    public Stage(float duration, bool startInteraction, bool endInteraction, View view)
+    public Stage(float duration, bool startInteraction, bool endInteraction, View view, string description)
     {
         this.duration = duration;
         this.startInteraction = startInteraction;
         this.endInteraction = endInteraction;
         this.view = view;
+        this.description = description;
     }
 }
 

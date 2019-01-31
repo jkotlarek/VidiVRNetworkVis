@@ -5,13 +5,22 @@ using UnityEngine;
 
 public class ShortestPathTask : Task
 {
+    public ShortestPathTask(string task, string dataset, string viewcond)
+    {
+        this.task = task;
+        this.dataset = dataset;
+        this.viewcond = viewcond;
+    }
+
     public override void Init()
     {
-        stages = new List<Stage>();
-        stages.Add(new Stage(0, false, false, View.TITLE));
-        stages.Add(new Stage(0, true, true, View.PATH));
+        Debug.Log("ShortestPathTask.Init");
 
-        if (correctNodes.Length == 0)
+        stages = new List<Stage>();
+        stages.Add(new Stage(0, false, false, View.TITLE, "Task - Shortest Path\nRead Handout"));
+        stages.Add(new Stage(0, true, true, View.PATH, ""));
+
+        if (correctNodes == null || correctNodes.Length == 0)
         {
             switch (dataset)
             {

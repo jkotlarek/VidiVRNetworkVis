@@ -9,6 +9,9 @@ public class ManipulateNetwork2D : MonoBehaviour
     public GameObject highlightedNodeObject;
     
     public float nodeScale;
+    public float minZoom;
+    public float maxZoom;
+    public float defaultZoom;
     public List<Vector3> nodes;
     public Dictionary<int, GameObject> highlightedNodes;
     public bool allowHighlight = true;
@@ -36,15 +39,22 @@ public class ManipulateNetwork2D : MonoBehaviour
             Debug.Log("click");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             int node = RayCastToNode(ray, nodeScale*1.5f, 100);
-            if (node > -1) ToggleHighlight(node);
+            if (node > -1)
+            {
+                taskManager.IncrementHighlightAction(1);
+                taskManager.IncremementTouchAction(-1);
+                ToggleHighlight(node);
+            }
         }
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - (scroll * 0.2f), 0.007f, 0.7f);
+        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - (scroll * 0.2f), minZoom, maxZoom);
+        if (scroll != 0) taskManager.IncremementTouchAction(1);
 
         if (Input.GetMouseButtonDown(0))
         {
             lastMousePos = Input.mousePosition;
+            taskManager.IncremementTouchAction(1);
         }
         //If left mouse is held down
         if (Input.GetMouseButton(0))
@@ -57,6 +67,12 @@ public class ManipulateNetwork2D : MonoBehaviour
 
             lastMousePos = Input.mousePosition;
         }
+    }
+
+    public void ResetView()
+    {
+        Camera.main.transform.position.Set(0f, 0f, Camera.main.transform.position.z);
+        Camera.main.orthographicSize = defaultZoom;
     }
 
     public int WhichNode(Vector3 p)
@@ -112,7 +128,7 @@ public class ManipulateNetwork2D : MonoBehaviour
         float d = float.MaxValue;
         foreach (KeyValuePair<int, float> kp in selectedNodes)
         {
-            if (kp.Value < float.MaxValue)
+            if (kp.Value < d)
             {
                 node = kp.Key;
                 d = kp.Value;
@@ -151,6 +167,14 @@ public class ManipulateNetwork2D : MonoBehaviour
         }
     }
 
+    public void ClearAllHighlight()
+    {
+        foreach (var h in highlightedNodes)
+        {
+            Destroy(h.Value);
+        }
+        highlightedNodes.Clear();
+    }
 
     public void Continue()
     {

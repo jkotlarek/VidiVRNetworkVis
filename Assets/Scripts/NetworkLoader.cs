@@ -25,21 +25,27 @@ public class NetworkLoader : MonoBehaviour {
 
 	public void LoadNetwork()
     {
+        Debug.Log("Loading Network: " + networkName);
+
         Network n = readFile();
-        var bounds = GetBounds(n.nodes);
         InstantiateObjects(n);
 
-        try
+
+        if (GetComponent<ManipulateNetwork>() != null)
         {
             var mn = GetComponent<ManipulateNetwork>();
             mn.nodes = nodePositions;
             mn.nodeScale = nodeSize;
-        } catch
+        }
+        else if (GetComponent<ManipulateNetwork2D>() != null)
         {
-
             var mn = GetComponent<ManipulateNetwork2D>();
             mn.nodes = nodePositions;
             mn.nodeScale = nodeSize;
+        }
+        else
+        {
+            Debug.LogError("No suitable network manipulation script found.");
         }
 
 
@@ -49,19 +55,6 @@ public class NetworkLoader : MonoBehaviour {
     {
         string filename = Application.streamingAssetsPath + "/" + networkFolder + "/" + networkName;
         return JsonUtility.FromJson<Network>(File.ReadAllText(filename));
-    }
-    
-    Vector3[] GetBounds(Node[] nodes)
-    {
-        Vector3[] bounds = { Vector3.positiveInfinity, Vector3.negativeInfinity };
-        foreach (Node n in nodes)
-        {
-            Vector3 v = new Vector3(n.x, n.y, n.z);
-            bounds[0] = Vector3.Min(v, bounds[0]);
-            bounds[1] = Vector3.Max(v, bounds[1]);
-        }
-
-        return bounds;
     }
 
     void InstantiateObjects(Network n)

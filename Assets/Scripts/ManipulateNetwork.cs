@@ -47,7 +47,7 @@ public class ManipulateNetwork : MonoBehaviour {
             if (!active[2])
             {
                 active[2] = true;
-                taskManager.IncremementTouchAction();
+                taskManager.IncremementTouchAction(1);
             }
 
             //Modify position
@@ -148,7 +148,7 @@ public class ManipulateNetwork : MonoBehaviour {
     public void ToggleHighlight(int index)
     {
 
-        taskManager.IncrementHighlightAction();
+        taskManager.IncrementHighlightAction(1);
 
         if (highlightParent == null)
         {
@@ -175,7 +175,15 @@ public class ManipulateNetwork : MonoBehaviour {
         }
     }
 
-
+    public void ClearAllHighlight()
+    {
+        foreach (var h in highlightedNodes)
+        {
+            Destroy(h.Value);
+        }
+        highlightedNodes.Clear();
+    }
+    
     public void Continue()
     {
         taskManager.NextStage();
