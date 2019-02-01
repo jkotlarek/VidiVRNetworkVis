@@ -5,6 +5,24 @@ using UnityEngine;
 
 public class FindDiffsTask : Task
 {
+    int[][][] nodeLists = {
+        new int[][] {
+            new int[] { 16, 12, 30, 27 },
+            new int[] { 0, 68, 74, 17 },
+            new int[] { 230, 101, 9, 188 },
+            new int[] { 426, 4078, 2414, 2543 },
+            new int[] { 1496, 112, 1418, 1292 }
+        },
+        new int[][] {
+            new int[] { 16, 12, 30, 27 },
+            new int[] { 0, 68, 74, 17 },
+            new int[] { 230, 101, 9, 188 },
+            new int[] { 426, 4078, 2414, 2543 },
+            new int[] { 1496, 112, 1418, 1292 }
+        }
+
+    };
+
     public FindDiffsTask(string task, string dataset, string viewcond)
     {
         this.task = task;
@@ -17,32 +35,14 @@ public class FindDiffsTask : Task
         Debug.Log("FindDiffsTask.Init");
 
         stages = new List<Stage>();
-        stages.Add(new Stage(0, false, false, View.TITLE, "Task - Find Differences\nRead Handout"));
+        stages.Add(new Stage(0, false, false, View.TITLE, "Dataset " + dataset.Substring(1,1) + "\nTask - Find Differences"));
         stages.Add(new Stage(30, false, false, View.MUTATED, ""));
         stages.Add(new Stage(15, false, false, View.BLANK, "Please Wait"));
         stages.Add(new Stage(0, true, true, View.NORMAL, ""));
 
-        if (correctNodes == null || correctNodes.Length == 0)
-        {
-            switch (dataset)
-            {
-                case "D0":
-                    correctNodes = new int[] { 0, 1, 2, 3 };
-                    break;
-                case "D1":
-                    correctNodes = new int[] { 0, 1, 2, 3 };
-                    break;
-                case "D2":
-                    correctNodes = new int[] { 0, 1, 2, 3 };
-                    break;
-                case "D3":
-                    correctNodes = new int[] { 0, 1, 2, 3 };
-                    break;
-                case "D4":
-                    correctNodes = new int[] { 0, 1, 2, 3 };
-                    break;
-            }
-        }
+        int d = int.Parse(dataset.Substring(1, 1));
+        int v = int.Parse(viewcond.Substring(0, 1)) - 2;
+        correctNodes = nodeLists[v][d];
     }
 
     public override void Begin()

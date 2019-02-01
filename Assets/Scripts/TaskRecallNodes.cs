@@ -5,6 +5,24 @@ using UnityEngine;
 
 public class RecallNodesTask : Task
 {
+    int[][][] nodeLists = {
+        new int[][] {
+            new int[] { 5, 11, 15, 33, 8 },
+            new int[] { 47, 8, 11, 49, 31 },
+            new int[] { 188, 3, 117, 94, 53 },
+            new int[] { 3975, 4378, 4935, 1393, 707 },
+            new int[] { 957, 1250, 307, 1381, 568 }
+        },
+        new int[][] {
+            new int[] { 5, 11, 15, 33, 8 },
+            new int[] { 47, 8, 11, 49, 31 },
+            new int[] { 188, 3, 117, 94, 53 },
+            new int[] { 3975, 4378, 4935, 1393, 707 },
+            new int[] { 957, 1250, 307, 1381, 568 }
+        }
+        
+    };
+
     public RecallNodesTask(string task, string dataset, string viewcond)
     {
         this.task = task;
@@ -17,32 +35,14 @@ public class RecallNodesTask : Task
         Debug.Log("RecallNodesTask.Init");
 
         stages = new List<Stage>();
-        stages.Add(new Stage(0, false, false, View.TITLE, "Task - Recall Nodes\nRead Handout"));
+        stages.Add(new Stage(0, false, false, View.TITLE, "Dataset " + dataset.Substring(1, 1) + "\nTask - Recall Nodes"));
         stages.Add(new Stage(30, false, false, View.RECALL, ""));
         stages.Add(new Stage(15, false, false, View.BLANK, "Please Wait"));
         stages.Add(new Stage(0, true, true, View.NORMAL, ""));
 
-        if (correctNodes == null || correctNodes.Length == 0)
-        {
-            switch (dataset)
-            {
-                case "D0":
-                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
-                    break;
-                case "D1":
-                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
-                    break;
-                case "D2":
-                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
-                    break;
-                case "D3":
-                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
-                    break;
-                case "D4":
-                    correctNodes = new int[] { 0, 1, 2, 3, 4 };
-                    break;
-            }
-        }
+        int d = int.Parse(dataset.Substring(1, 1));
+        int v = int.Parse(viewcond.Substring(0, 1)) - 2;
+        correctNodes = nodeLists[v][d];
     }
 
     public override void Begin()

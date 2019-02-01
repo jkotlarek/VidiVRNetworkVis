@@ -23,12 +23,13 @@ public class NetworkLoader : MonoBehaviour {
     public List<GameObject> nodes;
     public List<GameObject> links;
 
-	public void LoadNetwork()
+	public void LoadNetwork(List<int> removedNodes)
     {
         Debug.Log("Loading Network: " + networkName);
 
         Network n = readFile();
-        InstantiateObjects(n);
+        if (removedNodes == null) removedNodes = new List<int>();
+        InstantiateObjects(n, removedNodes);
 
 
         if (GetComponent<ManipulateNetwork>() != null)
@@ -57,7 +58,7 @@ public class NetworkLoader : MonoBehaviour {
         return JsonUtility.FromJson<Network>(File.ReadAllText(filename));
     }
 
-    void InstantiateObjects(Network n)
+    void InstantiateObjects(Network n, List<int> removedNodes)
     {
         //Clean up existing children first
         int i = 0;
@@ -98,6 +99,11 @@ public class NetworkLoader : MonoBehaviour {
 
         foreach (Node node in n.nodes)
         {
+            if (removedNodes.Contains(nodes.Count))
+            {
+                nodes.Add(null);
+                continue;
+            }
             var pos = new Vector3(node.x, node.y, node.z);
             var newNode = Instantiate(nodeObject, nodeParent, false);
             newNode.transform.localPosition = pos;
@@ -111,14 +117,21 @@ public class NetworkLoader : MonoBehaviour {
             nodes.Add(newNode);
             nodePositions.Add(newNode.transform.localPosition);
         }
-
+        
         if (linkObject.GetComponent<LineRenderer>() != null)
         {
-            links = InstantiateLinksLR(n.links);
+            links = InstantiateLinksLR(n.links, removedNodes);
         }
         else if (linkObject.GetComponent<MeshRenderer>() != null)
         {
-            links = InstantiateLinksMesh(n.links);
+            links = InstantiateLinksMesh(n.links, removedNodes);
+        }
+
+        removedNodes.Sort();
+        removedNodes.Reverse();
+        foreach (int r in removedNodes)
+        {
+            nodes.RemoveAt(r);
         }
 
         if (optimizeMeshes)
@@ -200,12 +213,17 @@ public class NetworkLoader : MonoBehaviour {
     }
 
     //Instantiate Links with line renderer
-    List<GameObject> InstantiateLinksLR(Link[] links)
+    List<GameObject> InstantiateLinksLR(Link[] links, List<int> removedNodes)
     {
         List<GameObject> linkList = new List<GameObject>();
         foreach (Link l in links)
         {
             if (useThreshold && l.value >= threshold)
+            {
+                continue;
+            }
+
+            if (removedNodes.Contains(l.source) || removedNodes.Contains(l.target))
             {
                 continue;
             }
@@ -226,13 +244,18 @@ public class NetworkLoader : MonoBehaviour {
     }
 
     //Instantiate Links with mesh (cube or cylinder)
-    List<GameObject> InstantiateLinksMesh(Link[] links)
+    List<GameObject> InstantiateLinksMesh(Link[] links, List<int> removedNodes)
     {
         List<GameObject> linkList = new List<GameObject>();
 
         foreach(Link l in links)
         {
             if (useThreshold && l.value < threshold)
+            {
+                continue;
+            }
+
+            if (removedNodes.Contains(l.source) || removedNodes.Contains(l.target))
             {
                 continue;
             }

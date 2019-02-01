@@ -105,7 +105,7 @@ public class TaskManager : MonoBehaviour
             //Graph with nodes removed
             case View.MUTATED:
                 UpdateTitle(stage.description);
-                LoadNetwork(tasks[i]);
+                LoadNetwork(tasks[i], tasks[i].correctNodes.ToList());
                 SetNetworkVisibility(true);
                 SetTitleVisibility(false);
                 break;
@@ -113,7 +113,7 @@ public class TaskManager : MonoBehaviour
             //Graph with no nodes removed or highlighted
             case View.NORMAL:
                 UpdateTitle(stage.description);
-                LoadNetwork(tasks[i]);
+                LoadNetwork(tasks[i], null);
                 SetNetworkVisibility(true);
                 SetTitleVisibility(false);
                 break;
@@ -121,14 +121,14 @@ public class TaskManager : MonoBehaviour
             //Graph with first and last "correctNodes" highlighted
             case View.PATH:
                 UpdateTitle(stage.description);
-                LoadNetwork(tasks[i]);
+                LoadNetwork(tasks[i], null);
 
-                if(mnScript != null)
+                if(mnScript != null && tasks[i].correctNodes.Length > 1)
                 {
                     mnScript.ToggleHighlight(tasks[i].correctNodes[0]);
                     mnScript.ToggleHighlight(tasks[i].correctNodes[tasks[i].correctNodes.Length - 1]);
                 }
-                else if (mnScript2D != null)
+                else if (mnScript2D != null && tasks[i].correctNodes.Length > 1)
                 {
                     mnScript2D.ToggleHighlight(tasks[i].correctNodes[0]);
                     mnScript2D.ToggleHighlight(tasks[i].correctNodes[tasks[i].correctNodes.Length - 1]);
@@ -141,7 +141,7 @@ public class TaskManager : MonoBehaviour
             //Graph with all "correctNodes" highlighted
             case View.RECALL:
                 UpdateTitle(stage.description);
-                LoadNetwork(tasks[i]);
+                LoadNetwork(tasks[i], null);
                 
                 foreach (int ii in tasks[i].correctNodes)
                 {
@@ -156,7 +156,6 @@ public class TaskManager : MonoBehaviour
             //Black screen with task guide
             case View.TITLE:
                 UpdateTitle(stage.description);
-                UpdateTitle("Task\nInformation");
                 SetNetworkVisibility(false);
                 SetTitleVisibility(true);
                 //TODO show title
@@ -236,6 +235,15 @@ public class TaskManager : MonoBehaviour
         Debug.Log("TransitionNextTask");
         EndTask();
         i++;
+
+        if(i >= tasks.Count)
+        {
+            UpdateTitle("Done.");
+            SetTitleVisibility(true);
+            SetTimerVisibility(false);
+            SetNetworkVisibility(false);
+        }
+
         InitTask();
         StartTask();
         NextStage();
@@ -279,7 +287,7 @@ public class TaskManager : MonoBehaviour
         Debug.Log("touch");
     }
 
-    public void LoadNetwork(Task t)
+    public void LoadNetwork(Task t, List<int> removedNodes)
     {
         Debug.Log("LoadNetwork");
         nlScript.networkFolder = t.viewcond.ToLower();
@@ -287,7 +295,7 @@ public class TaskManager : MonoBehaviour
         nlScript.networkName = data.filename;
         nlScript.nodeSize = data.nodeSize;
         nlScript.linkSize = data.linkSize;
-        nlScript.LoadNetwork();
+        nlScript.LoadNetwork(removedNodes);
     }
 
     public void SetNetworkVisibility(bool vis)
@@ -300,7 +308,7 @@ public class TaskManager : MonoBehaviour
 
     public void UpdateTimer(float t)
     {
-        timerText.text = Mathf.Clamp(t, 0.0f, float.MaxValue).ToString("00.00");
+        timerText.text = ((int) t).ToString();
     }
 
     public void SetTimerVisibility(bool vis)

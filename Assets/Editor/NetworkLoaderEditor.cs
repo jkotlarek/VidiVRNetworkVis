@@ -15,7 +15,7 @@ public class NetworkLoaderEditor : Editor {
         
         if (GUILayout.Button("Load"))
         {
-            script.LoadNetwork();
+            script.LoadNetwork(null);
         }
     }
 }
