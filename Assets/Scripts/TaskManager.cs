@@ -125,13 +125,13 @@ public class TaskManager : MonoBehaviour
 
                 if(mnScript != null && tasks[i].correctNodes.Length > 1)
                 {
-                    mnScript.ToggleHighlight(tasks[i].correctNodes[0]);
-                    mnScript.ToggleHighlight(tasks[i].correctNodes[tasks[i].correctNodes.Length - 1]);
+                    mnScript.ToggleHighlight(tasks[i].correctNodes[0], true);
+                    mnScript.ToggleHighlight(tasks[i].correctNodes[tasks[i].correctNodes.Length - 1], true);
                 }
                 else if (mnScript2D != null && tasks[i].correctNodes.Length > 1)
                 {
-                    mnScript2D.ToggleHighlight(tasks[i].correctNodes[0]);
-                    mnScript2D.ToggleHighlight(tasks[i].correctNodes[tasks[i].correctNodes.Length - 1]);
+                    mnScript2D.ToggleHighlight(tasks[i].correctNodes[0], true);
+                    mnScript2D.ToggleHighlight(tasks[i].correctNodes[tasks[i].correctNodes.Length - 1], true);
                 }
 
                 SetNetworkVisibility(true);
@@ -145,8 +145,8 @@ public class TaskManager : MonoBehaviour
                 
                 foreach (int ii in tasks[i].correctNodes)
                 {
-                    if (mnScript != null) mnScript.ToggleHighlight(ii);
-                    else if (mnScript2D != null) mnScript2D.ToggleHighlight(ii);
+                    if (mnScript != null) mnScript.ToggleHighlight(ii, true);
+                    else if (mnScript2D != null) mnScript2D.ToggleHighlight(ii, true);
                 }
 
                 SetNetworkVisibility(true);
@@ -285,6 +285,18 @@ public class TaskManager : MonoBehaviour
     {
         tasks[i].touchActions += n;
         Debug.Log("touch");
+    }
+
+    public bool IsNodeProtected(int n)
+    {
+        if (stage.view == View.PATH && (tasks[i].correctNodes[0] == n || tasks[i].correctNodes[tasks[i].correctNodes.Length-1] == n))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void LoadNetwork(Task t, List<int> removedNodes)

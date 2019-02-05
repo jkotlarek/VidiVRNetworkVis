@@ -5,7 +5,8 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: HighlightMaterial
   m_Shader: {fileID: 4800000, guid: 0c1cf10ea69e60e4f9eb8955749f88ec, type: 3}
   m_ShaderKeywords: 
@@ -78,7 +79,7 @@ Material:
     - _Thickness: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - g_flCornerAdjust: 0.5
+    - g_flCornerAdjust: 0
     - g_flOutlineWidth: 0.005
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

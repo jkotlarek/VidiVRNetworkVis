@@ -7,6 +7,7 @@ public class ManipulateNetwork2D : MonoBehaviour
 
     public TaskManager taskManager;
     public GameObject highlightedNodeObject;
+    public GameObject altHighlightedNodeObject;
     
     public float nodeScale;
     public float minZoom;
@@ -41,15 +42,19 @@ public class ManipulateNetwork2D : MonoBehaviour
             int node = RayCastToNode(ray, nodeScale*1.5f, 100);
             if (node > -1)
             {
-                taskManager.IncrementHighlightAction(1);
                 taskManager.IncremementTouchAction(-1);
                 ToggleHighlight(node);
             }
         }
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
+        float oldSize = Camera.main.orthographicSize;
+        Vector3 oldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - new Vector3(0.5f, 0.5f, 0);
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - (scroll * 0.2f), minZoom, maxZoom);
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - new Vector3(0.5f, 0.5f, 0);
+        Camera.main.transform.position -= mousePosition - oldMousePosition;
         if (scroll != 0) taskManager.IncremementTouchAction(1);
+
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -59,14 +64,16 @@ public class ManipulateNetwork2D : MonoBehaviour
         //If left mouse is held down
         if (Input.GetMouseButton(0))
         {
-            Vector3 newPos = Camera.main.transform.position - (Input.mousePosition - lastMousePos)*2*Camera.main.orthographicSize/Camera.main.pixelHeight;
-            newPos.x = Mathf.Clamp(newPos.x, -1, 1);
-            newPos.y = Mathf.Clamp(newPos.y, -1, 1);
-            newPos.z = Camera.main.transform.position.z; 
-            Camera.main.transform.position = newPos;
-
+            Camera.main.transform.position -= (Input.mousePosition - lastMousePos)*2*Camera.main.orthographicSize/Camera.main.pixelHeight;
             lastMousePos = Input.mousePosition;
         }
+
+        //Clamp camera transform
+        Vector3 v = Camera.main.transform.position;
+        v.x = Mathf.Clamp(v.x, -1, 1);
+        v.y = Mathf.Clamp(v.y, -1, 1);
+        v.z = -10;
+        Camera.main.transform.position = v;
     }
 
     public void ResetView()
@@ -138,10 +145,10 @@ public class ManipulateNetwork2D : MonoBehaviour
         return node;
     }
 
-    public void ToggleHighlight(int index)
+    public void ToggleHighlight(int index, bool alternateColor = false)
     {
-
-        //taskManager.IncrementHighlightAction();
+        if(!alternateColor && taskManager.IsNodeProtected(index)) { return; }
+        taskManager.IncrementHighlightAction(1);
 
         if (highlightParent == null)
         {
@@ -155,7 +162,7 @@ public class ManipulateNetwork2D : MonoBehaviour
 
         if (!highlightedNodes.ContainsKey(index))
         {
-            var h = Instantiate(highlightedNodeObject, highlightParent, false);
+            var h = Instantiate(alternateColor ? altHighlightedNodeObject : highlightedNodeObject, highlightParent, false);
             h.transform.localPosition = nodes[index];
             h.transform.localScale *= nodeScale;
             highlightedNodes.Add(index, h);

@@ -7,6 +7,7 @@ public class ManipulateNetwork : MonoBehaviour {
 
     public TaskManager taskManager;
     public GameObject highlightedNodeObject;
+    public GameObject altHighlightedNodeObject;
 
     //public Transform network;
     public Transform[] controllers;
@@ -20,6 +21,7 @@ public class ManipulateNetwork : MonoBehaviour {
     public Vector3 startPos;
     public Quaternion startRot;
     public Vector3 startScale;
+    public Vector3 startOffset;
 
     public float translateFactor = 1.0f;
     public float nodeScale = 1.0f;
@@ -50,12 +52,6 @@ public class ManipulateNetwork : MonoBehaviour {
                 taskManager.IncremementTouchAction(1);
             }
 
-            //Modify position
-            Vector3 mid0 = (start[0] + start[1]) / 2;
-            Vector3 mid1 = (current[0] + current[1]) / 2;
-
-            transform.position = startPos + translateFactor*(mid1 - mid0);
-
             //Modify rotation
             /*
             Vector3 from = start[1] - start[0];
@@ -70,14 +66,19 @@ public class ManipulateNetwork : MonoBehaviour {
             float dist1 = Vector3.Distance(current[0], current[1]);
 
             transform.localScale = startScale * (dist1 / dist0);
+
+            //Modify position
+            Vector3 mid = (current[0] + current[1]) / 2f;
+            transform.position = mid + startOffset * dist1 / dist0;
         }
-	}
+    }
 
     public void SavePosition()
     {
         startPos = transform.position;
         startRot = transform.rotation;
         startScale = transform.localScale;
+        startOffset = transform.position - ((current[0] + current[1]) / 2);
     }
 
     public int WhichNode(Vector3 p)
@@ -145,8 +146,10 @@ public class ManipulateNetwork : MonoBehaviour {
         return node;
     }
 
-    public void ToggleHighlight(int index)
+    public void ToggleHighlight(int index, bool alternateColor=false)
     {
+
+        if (!alternateColor && taskManager.IsNodeProtected(index)) { return; }
 
         taskManager.IncrementHighlightAction(1);
 
@@ -162,7 +165,7 @@ public class ManipulateNetwork : MonoBehaviour {
 
         if (!highlightedNodes.ContainsKey(index))
         {
-            var h = Instantiate(highlightedNodeObject, highlightParent, false);
+            var h = Instantiate(alternateColor ? altHighlightedNodeObject : highlightedNodeObject, highlightParent, false);
             h.transform.localPosition = nodes[index];
             h.transform.localScale *= nodeScale;
             h.name = "Node " + index;
