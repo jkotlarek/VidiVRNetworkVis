@@ -8,7 +8,6 @@ public class Task
 {
 
     public string task;
-    public string dataset;
     public string viewcond;
 
     public int highlightActions = 0;
@@ -23,6 +22,7 @@ public class Task
     [NonSerialized] public DateTime taskStart;
     [NonSerialized] public DateTime taskEnd;
     [NonSerialized] public List<Stage> stages;
+    [NonSerialized] public Dataset dataset;
 
     public virtual void Init() { }
     public virtual void Begin() { }
@@ -56,6 +56,8 @@ public class Dataset
     public string filename;
     public float nodeSize;
     public float linkSize;
+    public Vector3 position;
+    public Vector3 rotation;
 }
 
 public enum View

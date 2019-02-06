@@ -32,9 +32,9 @@ public class TaskManager : MonoBehaviour
         //Populate Task list
         foreach (Dataset d in datasets)
         {
-            tasks.Add(new ShortestPathTask("T1", d.name, viewCondition));
-            tasks.Add(new RecallNodesTask("T2", d.name, viewCondition));
-            tasks.Add(new FindDiffsTask("T3", d.name, viewCondition));
+            tasks.Add(new ShortestPathTask("T1", viewCondition, d));
+            tasks.Add(new RecallNodesTask("T2", viewCondition, d));
+            tasks.Add(new FindDiffsTask("T3", viewCondition, d));
         }
         
         //Start First task
@@ -223,7 +223,7 @@ public class TaskManager : MonoBehaviour
 
         tasks[i].totalInteractions = tasks[i].highlightActions + tasks[i].touchActions;
 
-        string path = Application.streamingAssetsPath + "/out/" + tasks[i].viewcond + "_" + tasks[i].dataset + "_" + tasks[i].task + ".json";
+        string path = Application.streamingAssetsPath + "/out/" + tasks[i].viewcond + "_" + tasks[i].dataset.name + "_" + tasks[i].task + ".json";
         File.WriteAllText(path, JsonUtility.ToJson(tasks[i]));
     }
 
@@ -302,11 +302,16 @@ public class TaskManager : MonoBehaviour
     public void LoadNetwork(Task t, List<int> removedNodes)
     {
         Debug.Log("LoadNetwork");
+
+        //Reset position and rotation
+        transform.position = t.dataset.position;
+        transform.rotation = Quaternion.Euler(t.dataset.rotation);
+
+        //Set parameters and load network from file.
         nlScript.networkFolder = t.viewcond.ToLower();
-        var data = datasets[int.Parse(t.dataset.Substring(1, 1))];
-        nlScript.networkName = data.filename;
-        nlScript.nodeSize = data.nodeSize;
-        nlScript.linkSize = data.linkSize;
+        nlScript.networkName = t.dataset.filename;
+        nlScript.nodeSize = t.dataset.nodeSize;
+        nlScript.linkSize = t.dataset.linkSize;
         nlScript.LoadNetwork(removedNodes);
     }
 

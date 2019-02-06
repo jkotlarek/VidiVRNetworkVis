@@ -23,11 +23,11 @@ public class RecallNodesTask : Task
         
     };
 
-    public RecallNodesTask(string task, string dataset, string viewcond)
+    public RecallNodesTask(string task, string viewcond, Dataset dataset)
     {
         this.task = task;
-        this.dataset = dataset;
         this.viewcond = viewcond;
+        this.dataset = dataset;
     }
 
     public override void Init()
@@ -35,12 +35,12 @@ public class RecallNodesTask : Task
         Debug.Log("RecallNodesTask.Init");
 
         stages = new List<Stage>();
-        stages.Add(new Stage(0, false, false, View.TITLE, "Dataset " + dataset.Substring(1, 1) + "\nTask - Recall Nodes"));
+        stages.Add(new Stage(0, false, false, View.TITLE, "Dataset " + dataset.name.Substring(1, 1) + "\nTask - Recall Nodes"));
         stages.Add(new Stage(30, false, false, View.RECALL, ""));
         stages.Add(new Stage(15, false, false, View.BLANK, "Please Wait"));
         stages.Add(new Stage(0, true, true, View.NORMAL, ""));
 
-        int d = int.Parse(dataset.Substring(1, 1));
+        int d = int.Parse(dataset.name.Substring(1, 1));
         int v = int.Parse(viewcond.Substring(0, 1)) - 2;
         correctNodes = nodeLists[v][d];
     }
