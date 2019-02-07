@@ -13,10 +13,10 @@ public class ShortestPathTask : Task
             new int[] { 800, 2634 }
         },
         new int[][] {
-            new int[] { 17, 29 },
-            new int[] { 20, 68 },
-            new int[] { 99, 373 },
-            new int[] { 3280, 2277 }
+            new int[] { 1, 29 },
+            new int[] { 22, 66 },
+            new int[] { 238, 354 },
+            new int[] { 3342, 4887 }
         }
 
     };

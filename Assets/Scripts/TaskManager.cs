@@ -30,12 +30,9 @@ public class TaskManager : MonoBehaviour
     void Start()
     {
         //Populate Task list
-        foreach (Dataset d in datasets)
-        {
-            tasks.Add(new ShortestPathTask("T1", viewCondition, d));
-            tasks.Add(new RecallNodesTask("T2", viewCondition, d));
-            tasks.Add(new FindDiffsTask("T3", viewCondition, d));
-        }
+        foreach (Dataset d in datasets) tasks.Add(new ShortestPathTask("T1", viewCondition, d));
+        foreach (Dataset d in datasets) tasks.Add(new RecallNodesTask("T2", viewCondition, d));
+        foreach (Dataset d in datasets) tasks.Add(new FindDiffsTask("T3", viewCondition, d));
         
         //Start First task
         i = 0;
@@ -158,7 +155,6 @@ public class TaskManager : MonoBehaviour
                 UpdateTitle(stage.description);
                 SetNetworkVisibility(false);
                 SetTitleVisibility(true);
-                //TODO show title
                 break;
 
         }
