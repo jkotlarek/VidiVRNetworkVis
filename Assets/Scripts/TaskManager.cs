@@ -219,7 +219,10 @@ public class TaskManager : MonoBehaviour
 
         tasks[i].totalInteractions = tasks[i].highlightActions + tasks[i].touchActions;
 
-        string path = Application.streamingAssetsPath + "/out/" + tasks[i].viewcond + "_" + tasks[i].dataset.name + "_" + tasks[i].task + ".json";
+        if (!Directory.Exists(Application.streamingAssetsPath + "/out"))
+            Directory.CreateDirectory(Application.streamingAssetsPath + "/out");
+
+        string path = Application.streamingAssetsPath + "/out/" + tasks[i].viewcond + "_" + tasks[i].task + "_" + tasks[i].dataset.name + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
         File.WriteAllText(path, JsonUtility.ToJson(tasks[i]));
     }
 
