@@ -36,3 +36,17 @@ public class Node
     public float y;
     public float z;
 }
+
+public class LinkObject
+{
+    public Vector3 position;
+    public Quaternion rotation;
+    public Vector3 scale;
+
+    public LinkObject(Vector3 p, Quaternion r, Vector3 s)
+    {
+        position = p;
+        rotation = r;
+        scale = s;
+    }
+}

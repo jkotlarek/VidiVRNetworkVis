@@ -64,3 +64,15 @@ public enum View
 {
     BLANK, TITLE, NORMAL, PATH, RECALL, MUTATED
 }
+
+public class NodeHit
+{
+    public int node;
+    public float distance;
+
+    public NodeHit(int node, float distance)
+    {
+        this.node = node;
+        this.distance = distance;
+    }
+}

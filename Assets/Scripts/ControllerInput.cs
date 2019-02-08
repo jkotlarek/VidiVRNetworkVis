@@ -12,6 +12,8 @@ public class ControllerInput : MonoBehaviour {
     public Devices device;
 
     public bool active = false;
+    public bool touching = false;
+    public float maxRayLength = 100f;
     public float rayLength = 100f;
     public float rayAngle = 0f;
 
@@ -46,6 +48,17 @@ public class ControllerInput : MonoBehaviour {
 		if (controller.triggerClicked)
         {
             mnScript.current[(int)device] = transform.position;
+        }
+
+        if (mnScript.allowHighlight && controller.touchpadTouched)
+        {
+            touching = true;
+            mnScript.TempHighlight(RayCast());
+        }
+        else if (touching)
+        {
+            touching = false;
+            mnScript.TempHighlight(-1);
         }
 	}
 
@@ -87,7 +100,7 @@ public class ControllerInput : MonoBehaviour {
     void HandlePadPressed(object sender, ControllerInteractionEventArgs e)
     {
         Debug.Log("pressed");
-        if (active) RayCast();
+        if (active) mnScript.ToggleHighlight(RayCast());
     }
 
     //nothing
@@ -111,14 +124,13 @@ public class ControllerInput : MonoBehaviour {
         mnScript.nextStage[(int)device] = false;
     }
 
-    void RayCast()
+    int RayCast()
     {
         //Custom Angle-distance ray
         Ray ray = new Ray(transform.position, transform.forward);
-        int indexOfNodeHit = mnScript.RayCastToNode(ray, Mathf.Deg2Rad * rayAngle, rayLength);
-
-        if (indexOfNodeHit < 0) return;
-        else mnScript.ToggleHighlight(indexOfNodeHit);
+        NodeHit nh = mnScript.RayCastToNode(ray, Mathf.Deg2Rad * rayAngle, maxRayLength);
+        LR.SetPosition(1, Vector3.forward * Mathf.Min(nh.distance, maxRayLength));
+        return nh.node;
     }
 
 }

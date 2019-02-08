@@ -8,6 +8,8 @@ public class ManipulateNetwork : MonoBehaviour {
     public TaskManager taskManager;
     public GameObject highlightedNodeObject;
     public GameObject altHighlightedNodeObject;
+    public GameObject tempHighlightedNodeObject;
+    public GameObject highlightedLinkObject;
 
     //public Transform network;
     public Transform[] controllers;
@@ -27,14 +29,18 @@ public class ManipulateNetwork : MonoBehaviour {
     public float nodeScale = 1.0f;
     public float selectionThreshold;
     public List<Vector3> nodes;
+    public List<List<LinkObject>> links;
     public Dictionary<int, GameObject> highlightedNodes;
 
     Transform highlightParent;
+    GameObject tempHighlight;
+    List<GameObject> tempLinks;
 
 	// Use this for initialization
 	void Start () {
 
         highlightedNodes = new Dictionary<int, GameObject>();
+        tempLinks = new List<GameObject>();
 
         if (nodes == null || nodes.Count == 0)
         {
@@ -113,7 +119,7 @@ public class ManipulateNetwork : MonoBehaviour {
     /// <param name="angle">The angle selection threshold</param>
     /// <param name="maxDist">The maximum distance to cast</param>
     /// <returns>The index of the node hit.</returns>
-    public int RayCastToNode(Ray ray, float angle, float maxDist)
+    public NodeHit RayCastToNode(Ray ray, float angle, float maxDist)
     {
         ray.origin = transform.InverseTransformPoint(ray.origin);
         ray.direction = transform.InverseTransformDirection(ray.direction);
@@ -143,24 +149,26 @@ public class ManipulateNetwork : MonoBehaviour {
             }
         }
 
-        return node;
+        l *= transform.localScale.x;
+
+        return new NodeHit(node, l);
     }
 
     public void ToggleHighlight(int index, bool alternateColor=false)
     {
-
+        if (index < 0) { return; }
         if (!alternateColor && taskManager.IsNodeProtected(index)) { return; }
 
         taskManager.IncrementHighlightAction(1);
 
         if (highlightParent == null)
         {
-            var NodesGO = new GameObject("Highlighted Nodes");
-            NodesGO.transform.SetParent(transform);
-            NodesGO.transform.localPosition = Vector3.zero;
-            NodesGO.transform.localRotation = Quaternion.identity;
-            NodesGO.transform.localScale = Vector3.one;
-            highlightParent = NodesGO.transform;
+            var highlightGO = new GameObject("Highlighted Nodes");
+            highlightGO.transform.SetParent(transform);
+            highlightGO.transform.localPosition = Vector3.zero;
+            highlightGO.transform.localRotation = Quaternion.identity;
+            highlightGO.transform.localScale = Vector3.one;
+            highlightParent = highlightGO.transform;
         }
 
         if (!highlightedNodes.ContainsKey(index))
@@ -170,6 +178,13 @@ public class ManipulateNetwork : MonoBehaviour {
             h.transform.localScale *= nodeScale;
             h.name = "Node " + index;
             highlightedNodes.Add(index, h);
+
+            if(tempHighlight != null)
+            {
+                Destroy(tempHighlight);
+                tempHighlight = null;
+            }
+
         }
         else
         {
@@ -185,6 +200,51 @@ public class ManipulateNetwork : MonoBehaviour {
             Destroy(h.Value);
         }
         highlightedNodes.Clear();
+    }
+
+    public void TempHighlight(int index)
+    {
+        if (tempHighlight != null)
+        {
+            if (index == int.Parse(tempHighlight.name))
+            {
+                return;
+            }
+            else
+            {
+                Destroy(tempHighlight);
+                tempHighlight = null;
+                
+                foreach (GameObject link in tempLinks) Destroy(link);
+                tempLinks.Clear();
+            }
+        }
+
+        if (index < 0)
+        {
+            foreach (GameObject link in tempLinks) Destroy(link);
+            tempLinks.Clear();
+            return;
+        }
+
+        if (!highlightedNodes.ContainsKey(index))
+        {
+            var h = Instantiate(tempHighlightedNodeObject, transform, false);
+            h.transform.localPosition = nodes[index];
+            h.transform.localScale *= nodeScale;
+            h.name = index.ToString();
+            tempHighlight = h;
+        }
+
+        foreach (LinkObject link in links[index])
+        {
+            var l = Instantiate(highlightedLinkObject, transform, false);
+            l.transform.localPosition = link.position;
+            l.transform.localRotation = link.rotation;
+            l.transform.localScale = link.scale;
+            tempLinks.Add(l);
+        }
+
     }
     
     public void Continue()

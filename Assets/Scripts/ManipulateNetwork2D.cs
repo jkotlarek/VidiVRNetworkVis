@@ -8,23 +8,29 @@ public class ManipulateNetwork2D : MonoBehaviour
     public TaskManager taskManager;
     public GameObject highlightedNodeObject;
     public GameObject altHighlightedNodeObject;
+    public GameObject tempHighlightedNodeObject;
+    public GameObject highlightedLinkObject;
     
     public float nodeScale;
     public float minZoom;
     public float maxZoom;
     public float defaultZoom;
     public List<Vector3> nodes;
+    public List<List<LinkObject>> links;
     public Dictionary<int, GameObject> highlightedNodes;
     public bool allowHighlight = true;
 
     Transform highlightParent;
+    GameObject tempHighlight;
     Vector3 lastMousePos;
+    List<GameObject> tempLinks;
 
     // Use this for initialization
     void Start()
     {
 
         highlightedNodes = new Dictionary<int, GameObject>();
+        tempLinks = new List<GameObject>();
 
         if (nodes == null || nodes.Count == 0)
         {
@@ -45,6 +51,12 @@ public class ManipulateNetwork2D : MonoBehaviour
                 taskManager.IncremementTouchAction(-1);
                 ToggleHighlight(node);
             }
+        }
+        if (allowHighlight && !Input.GetMouseButton(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            int node = RayCastToNode(ray, nodeScale * 1.5f, 100);
+            TempHighlight(node);
         }
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -166,6 +178,12 @@ public class ManipulateNetwork2D : MonoBehaviour
             h.transform.localPosition = nodes[index];
             h.transform.localScale *= nodeScale;
             highlightedNodes.Add(index, h);
+
+            if (tempHighlight != null)
+            {
+                Destroy(tempHighlight);
+                tempHighlight = null;
+            }
         }
         else
         {
@@ -183,10 +201,53 @@ public class ManipulateNetwork2D : MonoBehaviour
         highlightedNodes.Clear();
     }
 
+    public void TempHighlight(int index)
+    {
+        if (tempHighlight != null)
+        {
+            if (index == int.Parse(tempHighlight.name))
+            {
+                return;
+            }
+            else
+            {
+                Destroy(tempHighlight);
+                tempHighlight = null;
+
+                foreach (GameObject link in tempLinks) Destroy(link);
+                tempLinks.Clear();
+            }
+        }
+
+        if (index < 0)
+        {
+            foreach (GameObject link in tempLinks) Destroy(link);
+            tempLinks.Clear();
+            return;
+        }
+
+        if (!highlightedNodes.ContainsKey(index))
+        {
+            var h = Instantiate(tempHighlightedNodeObject, transform, false);
+            h.transform.localPosition = nodes[index];
+            h.transform.localScale *= nodeScale;
+            h.name = index.ToString();
+            tempHighlight = h;
+        }
+        
+        foreach (LinkObject link in links[index])
+        {
+            var l = Instantiate(highlightedLinkObject, transform, false);
+            l.transform.localPosition = link.position;
+            l.transform.localRotation = link.rotation;
+            l.transform.localScale = link.scale;
+            tempLinks.Add(l);
+        }
+    }
+
     public void Continue()
     {
         taskManager.NextStage();
     }
-
 
 }

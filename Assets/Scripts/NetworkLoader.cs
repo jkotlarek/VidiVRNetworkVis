@@ -21,6 +21,7 @@ public class NetworkLoader : MonoBehaviour {
 
     public List<Vector3> nodePositions;
     public List<GameObject> nodes;
+    public List<List<LinkObject>> linkPositions;
     public List<GameObject> links;
 
 	public void LoadNetwork(List<int> removedNodes)
@@ -37,12 +38,14 @@ public class NetworkLoader : MonoBehaviour {
             var mn = GetComponent<ManipulateNetwork>();
             mn.nodes = nodePositions;
             mn.nodeScale = nodeSize;
+            mn.links = linkPositions;
         }
         else if (GetComponent<ManipulateNetwork2D>() != null)
         {
             var mn = GetComponent<ManipulateNetwork2D>();
             mn.nodes = nodePositions;
             mn.nodeScale = nodeSize;
+            mn.links = linkPositions;
         }
         else
         {
@@ -95,6 +98,7 @@ public class NetworkLoader : MonoBehaviour {
 
         nodePositions = new List<Vector3>();
         nodes = new List<GameObject>();
+        linkPositions = new List<List<LinkObject>>();
         links = new List<GameObject>();
 
         foreach (Node node in n.nodes)
@@ -116,16 +120,10 @@ public class NetworkLoader : MonoBehaviour {
 
             nodes.Add(newNode);
             nodePositions.Add(newNode.transform.localPosition);
+            linkPositions.Add(new List<LinkObject>());
         }
         
-        if (linkObject.GetComponent<LineRenderer>() != null)
-        {
-            links = InstantiateLinksLR(n.links, removedNodes);
-        }
-        else if (linkObject.GetComponent<MeshRenderer>() != null)
-        {
-            links = InstantiateLinksMesh(n.links, removedNodes);
-        }
+        links = InstantiateLinks(n.links, removedNodes);
 
         removedNodes.Sort();
         removedNodes.Reverse();
@@ -137,12 +135,44 @@ public class NetworkLoader : MonoBehaviour {
         if (optimizeMeshes)
         {
             OptimizeMeshes(nodeParent, nodeObject);
-
-            if (linkObject.GetComponent<MeshRenderer>() != null)
-            {
-                OptimizeMeshes(linkParent, linkObject);
-            }
+            OptimizeMeshes(linkParent, linkObject);
         }
+    }
+
+    //Instantiate Links with mesh (cube or cylinder)
+    List<GameObject> InstantiateLinks(Link[] links, List<int> removedNodes)
+    {
+        List<GameObject> linkList = new List<GameObject>();
+
+        foreach (Link l in links)
+        {
+            if (useThreshold && l.value < threshold)
+            {
+                continue;
+            }
+
+            if (removedNodes.Contains(l.source) || removedNodes.Contains(l.target))
+            {
+                continue;
+            }
+
+            var link = Instantiate(linkObject, linkParent, false);
+            link.name = "Link " + l.source + " to " + l.target;
+
+            var p1 = nodes[l.source].transform.localPosition;
+            var p2 = nodes[l.target].transform.localPosition;
+
+            LinkObject lo = new LinkObject((p1 + p2) / 2, Quaternion.FromToRotation(Vector3.up, p2 - p1), new Vector3(linkSize, Vector3.Distance(p1, p2) * 0.5f, linkSize));
+            
+            link.transform.localPosition = lo.position;
+            link.transform.localRotation = lo.rotation;
+            link.transform.localScale = lo.scale;
+
+            linkList.Add(link);
+            linkPositions[l.source].Add(lo);
+            linkPositions[l.target].Add(lo);
+        }
+        return linkList;
     }
 
     void OptimizeMeshes(Transform parent, GameObject parentObj)
@@ -210,69 +240,6 @@ public class NetworkLoader : MonoBehaviour {
         float b = Convert.ToInt32(s.Substring(5, 2), 16) / 255f;
 
         return new Color(r, g, b);
-    }
-
-    //Instantiate Links with line renderer
-    List<GameObject> InstantiateLinksLR(Link[] links, List<int> removedNodes)
-    {
-        List<GameObject> linkList = new List<GameObject>();
-        foreach (Link l in links)
-        {
-            if (useThreshold && l.value >= threshold)
-            {
-                continue;
-            }
-
-            if (removedNodes.Contains(l.source) || removedNodes.Contains(l.target))
-            {
-                continue;
-            }
-
-            var link = Instantiate(linkObject, linkParent, false);
-            link.name = "Link " + l.source + " to " + l.target;
-            var lr = link.GetComponent<LineRenderer>();
-            lr.SetPositions(new[]
-            {
-                nodes[l.source].transform.localPosition,
-                nodes[l.target].transform.localPosition
-            });
-            lr.startWidth = linkSize;
-            lr.endWidth = linkSize;
-            linkList.Add(link);
-        }
-        return linkList;
-    }
-
-    //Instantiate Links with mesh (cube or cylinder)
-    List<GameObject> InstantiateLinksMesh(Link[] links, List<int> removedNodes)
-    {
-        List<GameObject> linkList = new List<GameObject>();
-
-        foreach(Link l in links)
-        {
-            if (useThreshold && l.value < threshold)
-            {
-                continue;
-            }
-
-            if (removedNodes.Contains(l.source) || removedNodes.Contains(l.target))
-            {
-                continue;
-            }
-
-            var link = Instantiate(linkObject, linkParent, false);
-            link.name = "Link " + l.source + " to " + l.target;
-
-            var p1 = nodes[l.source].transform.localPosition;
-            var p2 = nodes[l.target].transform.localPosition;
-
-            link.transform.localPosition = (p1 + p2) / 2;
-            link.transform.localRotation = Quaternion.FromToRotation(Vector3.up, p2 - p1);
-            link.transform.localScale = new Vector3(linkSize, Vector3.Distance(p1, p2) * 0.5f, linkSize);
-
-            linkList.Add(link);
-        }
-        return linkList;
     }
 
 }
