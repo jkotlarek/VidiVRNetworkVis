@@ -36,14 +36,16 @@ public class Stage
     public float duration;
     public bool startInteraction;
     public bool endInteraction;
+    public bool resetTransform;
     public View view;
     public string description;
 
-    public Stage(float duration, bool startInteraction, bool endInteraction, View view, string description)
+    public Stage(float duration, bool startInteraction, bool endInteraction, bool resetTransform, View view, string description)
     {
         this.duration = duration;
         this.startInteraction = startInteraction;
         this.endInteraction = endInteraction;
+        this.resetTransform = resetTransform;
         this.view = view;
         this.description = description;
     }
@@ -58,6 +60,7 @@ public class Dataset
     public float linkSize;
     public Vector3 position;
     public Vector3 rotation;
+    public Vector3 scale;
 }
 
 public enum View

@@ -231,24 +231,28 @@ MonoBehaviour:
     linkSize: 0.005
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
+    scale: {x: 0.5, y: 0.5, z: 0.5}
   - name: D1
     filename: lesmis-2d.json
     nodeSize: 0.03
     linkSize: 0.003
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
+    scale: {x: 0.5, y: 0.5, z: 0.5}
   - name: D2
     filename: netscience-lc-2d.json
     nodeSize: 0.01
     linkSize: 0.001
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
+    scale: {x: 0.5, y: 0.5, z: 0.5}
   - name: D3
     filename: power-2d.json
     nodeSize: 0.002
     linkSize: 0.0002
     position: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
+    scale: {x: 0.5, y: 0.5, z: 0.5}
 --- !u!114 &30804041
 MonoBehaviour:
   m_ObjectHideFlags: 0

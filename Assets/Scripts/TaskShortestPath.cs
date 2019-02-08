@@ -32,8 +32,8 @@ public class ShortestPathTask : Task
         Debug.Log("ShortestPathTask.Init");
 
         stages = new List<Stage>();
-        stages.Add(new Stage(0, false, false, View.TITLE, "Dataset " + dataset.name.Substring(1, 1) + "\nTask - Shortest Path"));
-        stages.Add(new Stage(0, true, true, View.PATH, ""));
+        stages.Add(new Stage(0, false, false, false, View.TITLE, "Dataset " + dataset.name.Substring(1, 1) + "\nTask - Shortest Path"));
+        stages.Add(new Stage(0, true, true, true, View.PATH, ""));
         
         int d = int.Parse(dataset.name.Substring(1, 1));
         int v = int.Parse(viewcond.Substring(0, 1)) - 2;

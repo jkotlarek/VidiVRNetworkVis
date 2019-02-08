@@ -102,7 +102,7 @@ public class TaskManager : MonoBehaviour
             //Graph with nodes removed
             case View.MUTATED:
                 UpdateTitle(stage.description);
-                LoadNetwork(tasks[i], tasks[i].correctNodes.ToList());
+                LoadNetwork(tasks[i], tasks[i].correctNodes.ToList(), stage.resetTransform);
                 SetNetworkVisibility(true);
                 SetTitleVisibility(false);
                 break;
@@ -110,7 +110,7 @@ public class TaskManager : MonoBehaviour
             //Graph with no nodes removed or highlighted
             case View.NORMAL:
                 UpdateTitle(stage.description);
-                LoadNetwork(tasks[i], null);
+                LoadNetwork(tasks[i], null, stage.resetTransform);
                 SetNetworkVisibility(true);
                 SetTitleVisibility(false);
                 break;
@@ -118,7 +118,7 @@ public class TaskManager : MonoBehaviour
             //Graph with first and last "correctNodes" highlighted
             case View.PATH:
                 UpdateTitle(stage.description);
-                LoadNetwork(tasks[i], null);
+                LoadNetwork(tasks[i], null, stage.resetTransform);
 
                 if(mnScript != null && tasks[i].correctNodes.Length > 1)
                 {
@@ -138,7 +138,7 @@ public class TaskManager : MonoBehaviour
             //Graph with all "correctNodes" highlighted
             case View.RECALL:
                 UpdateTitle(stage.description);
-                LoadNetwork(tasks[i], null);
+                LoadNetwork(tasks[i], null, stage.resetTransform);
                 
                 foreach (int ii in tasks[i].correctNodes)
                 {
@@ -298,13 +298,17 @@ public class TaskManager : MonoBehaviour
         }
     }
 
-    public void LoadNetwork(Task t, List<int> removedNodes)
+    public void LoadNetwork(Task t, List<int> removedNodes, bool resetTransform)
     {
         Debug.Log("LoadNetwork");
 
         //Reset position and rotation
-        transform.position = t.dataset.position;
-        transform.rotation = Quaternion.Euler(t.dataset.rotation);
+        if (resetTransform)
+        {
+            transform.position = t.dataset.position;
+            transform.rotation = Quaternion.Euler(t.dataset.rotation);
+            transform.localScale = t.dataset.scale;
+        }
 
         //Set parameters and load network from file.
         nlScript.networkFolder = t.viewcond.ToLower();
