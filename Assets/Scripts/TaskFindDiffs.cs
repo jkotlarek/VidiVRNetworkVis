@@ -35,7 +35,7 @@ public class FindDiffsTask : Task
         stages = new List<Stage>();
         stages.Add(new Stage(0, false, false, View.TITLE, "Dataset " + dataset.name.Substring(1,1) + "\nTask - Find Differences"));
         stages.Add(new Stage(30, false, false, View.MUTATED, ""));
-        stages.Add(new Stage(15, false, false, View.BLANK, "Please Wait"));
+        stages.Add(new Stage(10, false, false, View.BLANK, "Please Wait"));
         stages.Add(new Stage(0, true, true, View.NORMAL, ""));
 
         int d = int.Parse(dataset.name.Substring(1, 1));
