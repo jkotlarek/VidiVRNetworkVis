@@ -9,14 +9,14 @@ public class ShortestPathTask : Task
         new int[][] {
             new int[] { 1, 29 },
             new int[] { 22, 66 },
-            new int[] { 238, 354 },
-            new int[] { 3342, 4887 }
+            new int[] { 230, 354 },
+            new int[] { 3352, 3670 }
         },
         new int[][] {
-            new int[] { 4, 23 },
-            new int[] { 20, 76 },
-            new int[] { 139, 276 },
-            new int[] { 800, 2634 }
+            new int[] { 1, 29 },
+            new int[] { 22, 66 },
+            new int[] { 230, 354 },
+            new int[] { 3352, 3670 }
         }
     };
 

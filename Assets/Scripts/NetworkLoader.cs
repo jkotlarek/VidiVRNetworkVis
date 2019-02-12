@@ -168,9 +168,12 @@ public class NetworkLoader : MonoBehaviour {
             link.transform.localRotation = lo.rotation;
             link.transform.localScale = lo.scale;
 
-            linkList.Add(link);
-            linkPositions[l.source].Add(lo);
-            linkPositions[l.target].Add(lo);
+            if (removedNodes == null || removedNodes.Count == 0)
+            {
+                linkList.Add(link);
+                linkPositions[l.source].Add(lo);
+                linkPositions[l.target].Add(lo);
+            }
         }
         return linkList;
     }

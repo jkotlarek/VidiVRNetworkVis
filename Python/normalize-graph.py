@@ -1,8 +1,8 @@
 import json
 import os
 
-indir = "../Assets/StreamingAssets/3D/"
-outdir = "../Assets/StreamingAssets/3D/"
+indir = "../Assets/StreamingAssets/3d/"
+outdir = "../Assets/StreamingAssets/3d/"
 
 
 def normalize(filename):
@@ -44,7 +44,7 @@ def normalize(filename):
 			n['y'] = (((float(n['y']) - minY) / diffY * 2) - 1) * maxDiff / diffY
 			n['z'] = (((float(n['z']) - minZ) / diffZ * 2) - 1) * maxDiff / diffZ
 
-		return json.dumps(data)
+		return json.dumps(data, indent=4, separators=(',', ': '))
 
 
 
