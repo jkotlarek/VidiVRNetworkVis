@@ -10,13 +10,13 @@ public class FindDiffsTask : Task
             new int[] { 6, 11, 12, 27, 32 },
             new int[] { 5, 16, 30, 41, 73 },
             new int[] { 72, 140, 188, 346, 360 },
-            new int[] { 253, 1243, 3782, 4039, 4219 }
+            new int[] { 427, 1091, 1244, 4035, 4219 }
         },
         new int[][] {
             new int[] { 6, 11, 12, 27, 32 },
             new int[] { 5, 16, 30, 41, 73 },
             new int[] { 72, 140, 188, 346, 360 },
-            new int[] { 253, 1243, 3782, 4039, 4219 }
+            new int[] { 427, 1091, 1244, 4035, 4219 }
         }
 
     };
@@ -35,7 +35,7 @@ public class FindDiffsTask : Task
         stages = new List<Stage>();
         stages.Add(new Stage(0, false, false, false, View.TITLE, "Dataset " + dataset.name.Substring(1,1) + "\nTask - Find Differences"));
         stages.Add(new Stage(30, false, false, true, View.MUTATED, ""));
-        stages.Add(new Stage(5, false, false, false, View.BLANK, "Please Wait"));
+        stages.Add(new Stage(1, false, false, false, View.BLANK, "Please Wait"));
         stages.Add(new Stage(0, true, true, false, View.NORMAL, ""));
 
         int d = int.Parse(dataset.name.Substring(1, 1));

@@ -154,9 +154,9 @@ MonoBehaviour:
   highlightedLinkObject: {fileID: 1242501595885542, guid: 8488d03a000db11469f5d67589f6cd06,
     type: 3}
   nodeScale: 0.05
-  minZoom: 0.007
-  maxZoom: 0.7
-  defaultZoom: 0.54
+  minZoom: 0.35
+  maxZoom: 6
+  defaultZoom: 0.5
   nodes:
   - {x: -0.2868217, y: 0.2248062, z: 0}
   - {x: -0.27131784, y: -0.20930232, z: 0}
@@ -223,6 +223,7 @@ MonoBehaviour:
   timerText: {fileID: 1281019898}
   titleText: {fileID: 1017354856}
   viewCondition: 2D
+  dataRate: 9
   tasks: []
   datasets:
   - name: D0

@@ -18,9 +18,12 @@ public class TaskManager : MonoBehaviour
     List<GameObject> network;
 
     public string viewCondition = "2D";
+    public int dataRate = 1;
     public List<Task> tasks;
     public Dataset[] datasets;
     int i = 0;
+    int j = 0;
+
     Stage stage;
 
     bool timerActive = false;
@@ -44,6 +47,7 @@ public class TaskManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Track time left in task if task is timed
         if (timerActive)
         {
             timeLeft -= Time.deltaTime;
@@ -54,6 +58,18 @@ public class TaskManager : MonoBehaviour
                 if (mnScript != null) SetTimerVisibility(false);
                 if (mnScript2D != null) timerText.text = "Continue";
                 NextStage();
+            }
+        }
+        //Save certain positions every <dataRate> frames
+        if (Time.frameCount % dataRate == 0)
+        {
+            stage.networkPosition.Add(new Vector(transform.position));
+            stage.networkScale.Add(new Vector(transform.localScale));
+
+            if (mnScript != null)
+            {
+                stage.headPosition.Add(new Vector(Camera.main.transform.position));
+                stage.headRotation.Add(new Vector(Camera.main.transform.rotation.eulerAngles));
             }
         }
     }
@@ -211,19 +227,13 @@ public class TaskManager : MonoBehaviour
         tasks[i].End();
 
         tasks[i].time = (tasks[i].taskEnd - tasks[i].taskStart).TotalSeconds;
-        
-        var exc1 = tasks[i].nodes.Except(tasks[i].correctNodes);
-        var exc2 = tasks[i].correctNodes.Except(tasks[i].nodes);
-        int errors = exc1.Count() + exc2.Count();
-        tasks[i].error = (double)errors / tasks[i].correctNodes.Length;
-
         tasks[i].totalInteractions = tasks[i].highlightActions + tasks[i].touchActions;
 
         if (!Directory.Exists(Application.streamingAssetsPath + "/out"))
             Directory.CreateDirectory(Application.streamingAssetsPath + "/out");
 
         string path = Application.streamingAssetsPath + "/out/" + tasks[i].viewcond + "_" + tasks[i].task + "_" + tasks[i].dataset.name + "_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".json";
-        File.WriteAllText(path, JsonUtility.ToJson(tasks[i]));
+        File.WriteAllText(path, JsonUtility.ToJson(tasks[i], true));
     }
 
     //Transition to next task
@@ -260,14 +270,15 @@ public class TaskManager : MonoBehaviour
             Debug.Log("NextStage");
             EndStage();
 
-            if (tasks[i].stages.Count() == 0)
+            if (tasks[i].stages.Count <= j)
             {
+                j = 0;
                 TransitionNextTask();
             }
             else
             {
-                stage = tasks[i].stages[0];
-                tasks[i].stages.RemoveAt(0);
+                stage = tasks[i].stages[j];
+                j++;
                 StartStage();
             }
         }

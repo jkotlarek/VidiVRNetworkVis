@@ -59,14 +59,22 @@ public class ManipulateNetwork2D : MonoBehaviour
             TempHighlight(node);
         }
 
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        float oldSize = Camera.main.orthographicSize;
-        Vector3 oldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - new Vector3(0.5f, 0.5f, 0);
-        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - (scroll * 0.2f), minZoom, maxZoom);
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - new Vector3(0.5f, 0.5f, 0);
-        Camera.main.transform.position -= mousePosition - oldMousePosition;
-        if (scroll != 0) taskManager.IncremementTouchAction(1);
+        float scroll = Input.GetAxis("Mouse ScrollWheel") / 2.5f;
+        Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 offset = mouse - transform.position;
 
+        if (scroll > 0)
+        {
+            transform.localScale *= 1 + scroll;
+            if (transform.localScale.x > minZoom && transform.localScale.x < maxZoom)
+                transform.position = mouse - offset * (1 + scroll);
+        }
+        else if (scroll < 0)
+        {
+            transform.localScale /= 1 - scroll;
+            if (transform.localScale.x > minZoom && transform.localScale.x < maxZoom)
+                transform.position = mouse - offset / (1 - scroll);
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -76,22 +84,28 @@ public class ManipulateNetwork2D : MonoBehaviour
         //If left mouse is held down
         if (Input.GetMouseButton(0))
         {
-            Camera.main.transform.position -= (Input.mousePosition - lastMousePos)*2*Camera.main.orthographicSize/Camera.main.pixelHeight;
+            transform.position += (Input.mousePosition - lastMousePos) * 2 * Camera.main.orthographicSize / Camera.main.pixelHeight;
             lastMousePos = Input.mousePosition;
         }
 
-        //Clamp camera transform
-        Vector3 v = Camera.main.transform.position;
-        v.x = Mathf.Clamp(v.x, -1, 1);
-        v.y = Mathf.Clamp(v.y, -1, 1);
-        v.z = -10;
-        Camera.main.transform.position = v;
+        //Clamp network transform
+        Vector3 v = transform.position;
+        v.x = Mathf.Clamp(v.x, -1f * transform.localScale.x, 1f * transform.localScale.x);
+        v.y = Mathf.Clamp(v.y, -1f * transform.localScale.y, 1f * transform.localScale.y);
+        v.z = 0;
+        transform.position = v;
+
+        Vector3 s = transform.localScale;
+        s.x = Mathf.Clamp(s.x, minZoom, maxZoom);
+        s.y = Mathf.Clamp(s.y, minZoom, maxZoom);
+        s.z = Mathf.Clamp(s.z, minZoom, maxZoom);
+        transform.localScale = s;
     }
 
     public void ResetView()
     {
-        Camera.main.transform.position.Set(0f, 0f, Camera.main.transform.position.z);
-        Camera.main.orthographicSize = defaultZoom;
+        transform.position = Vector3.zero;
+        transform.localScale = Vector3.one * defaultZoom;
     }
 
     public int WhichNode(Vector3 p)

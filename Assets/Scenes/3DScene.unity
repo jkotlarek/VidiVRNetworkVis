@@ -1184,6 +1184,7 @@ MonoBehaviour:
   timerText: {fileID: 18046265}
   titleText: {fileID: 1379149043}
   viewCondition: 3D
+  dataRate: 9
   tasks: []
   datasets:
   - name: D0
